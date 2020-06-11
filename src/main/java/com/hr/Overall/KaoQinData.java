@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Properties;
 
 public class KaoQinData {
+    public static void ass() {
+        System.out.println("sss");
+    }
 
     public static List<UtilModel> DataList(String userid, String time, String time2) {
         try {
