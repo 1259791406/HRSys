@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>修改用户信息</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+    <script src="/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.params.js"></script>
+    <style>
+        tr td input {
+            text-align: center;
+        }
+
+        .layui-table td, .layui-table th {
+            position: relative;
+            padding: 4px 4px;
+            min-height: 20px;
+            line-height: 20px;
+            font-size: 14px;
+        }
+
+        .layui-table tbody tr:hover, .layui-table-hover {
+            background-color: transparent;
+        }
+
+        .layui-form-select .layui-select-group dd {
+            padding-left: 20px;
+            color: #1e9fff;
+        }
+    </style>
+</head>
+<body>
+<script src="/static/layui/layui.all.js" charset="UTF-8"></script>
+<form class="layui-form">
+    <table class="layui-table" style="text-align: center">
+        <tr>
+            <td>员工工号</td>
+            <td>
+                <input type="text" class="layui-input" id="userid" name="userid" disabled readonly
+                       style="cursor: not-allowed">
+            </td>
+            <td>是否允许登陆</td>
+            <td>
+                <input type="radio" name="state" value="1" id="state1" title="允许">
+                <input type="radio" name="state" value="2" id="state2" title="不允许">
+            </td>
+        </tr>
+        <tr>
+            <td>用户名</td>
+            <td>
+                <input type="text" class="layui-input" name="username" id="username" lay-verify="required">
+            </td>
+            <td>性别</td>
+            <td>
+                <input type="radio" name="sex" value="1" id="sex1" title="男">
+                <input type="radio" name="sex" value="2" id="sex2" title="女">
+                <input type="radio" name="sex" value="3" id="sex3" title="未知">
+            </td>
+        </tr>
+        <tr>
+            <td>生日</td>
+            <td>
+                <input type="text" class="layui-input" name="day" id="day" placeholder="yyyy-MM-dd">
+            </td>
+            <td>部门</td>
+            <td>
+                <select lay-search="" lay-verify="required" name="deptid" id="deptname"></select>
+            </td>
+        </tr>
+        <tr>
+            <td>手机号</td>
+            <td>
+                <input type="text" class="layui-input" name="phone" id="phone" maxlength="11"
+                       lay-verify="required|phone">
+            </td>
+            <td>身份证号</td>
+            <td>
+                <input type="text" class="layui-input" name="idcard" id="idcard" maxlength="18">
+            </td>
+        </tr>
+        <tr>
+            <td>籍贯</td>
+            <td>
+                <input type="text" class="layui-input" lay-verify="required" name="nativePlace" id="NativePlace">
+            </td>
+            <td>基本工资</td>
+            <td>
+                <input type="text" class="layui-input" name="salary" id="salary" lay-verify="required|number">
+            </td>
+        </tr>
+        <tr>
+            <td>文化水平</td>
+            <td colspan="3">
+                <select lay-search="" name="education" id="Education"></select>
+            </td>
+<!--            <td>每月工作时长</td>-->
+<!--            <td>-->
+<!--                <input type="text" class="layui-input" name="size" id="size" lay-verify="required|number">-->
+<!--            </td>-->
+        </tr>
+        <tr>
+            <td>子女教育</td>
+            <td>
+                <input type="text" class="layui-input" name="children" id="children" lay-verify="required|number">
+            </td>
+            <td>赡养老人</td>
+            <td>
+                <input type="text" class="layui-input" name="supportTheOld" id="supportTheOld"
+                       lay-verify="required|number">
+            </td>
+        </tr>
+        <tr>
+            <td>继续教育</td>
+            <td>
+                <input type="text" class="layui-input" name="adult" id="adult" lay-verify="required|number">
+            </td>
+            <td>大病医疗</td>
+            <td>
+                <input type="text" class="layui-input" name="serious" id="serious" lay-verify="required|number">
+            </td>
+        </tr>
+        <tr>
+            <td>租房租金</td>
+            <td>
+                <input type="text" class="layui-input" name="renting" id="renting" lay-verify="required|number">
+            </td>
+            <td>买房贷款利息</td>
+            <td>
+                <input type="text" class="layui-input" name="draw" id="draw" lay-verify="required|number">
+            </td>
+        </tr>
+        <tr>
+            <td>在职情况</td>
+            <td>
+                <input type="radio" name="userState" value="1" id="在职" title="在职" checked>
+                <input type="radio" name="userState" value="2" id="离职" title="离职">
+            </td>
+            <td>岗位</td>
+            <td>
+                <input type="text" class="layui-input" name="post" id="post" lay-verify="required" maxlength="45">
+            </td>
+        </tr>
+        <tr>
+            <td>工资卡号</td>
+            <td>
+                <input type="text" class="layui-input" name="salaryCardNo" lay-verify="required" id="salaryCardNo"
+                       maxlength="45">
+            </td>
+            <td>所属线长</td>
+            <td>
+                <select lay-search="" lay-verify="required" name="threadLength" id="threadLength"></select>
+            </td>
+        </tr>
+        <tr>
+            <td>身高</td>
+            <td>
+                <input type="text" class="layui-input" name="height" id="height">
+            </td>
+            <td>体重</td>
+            <td>
+                <input type="text" class="layui-input" name="weight" id="weight">
+            </td>
+        </tr>
+        <tr>
+            <td>邮箱</td>
+            <td>
+                <input type="text" class="layui-input" name="email" id="email">
+            </td>
+            <td>是否已婚</td>
+            <td>
+                <input type="radio" name="marriage" value="1" lay-verify="required" id="已婚" title="已婚">
+                <input type="radio" name="marriage" value="2" lay-verify="required" id="未婚" title="未婚">
+            </td>
+        </tr>
+        <tr>
+            <td>入职时间</td>
+            <td>
+                <input type="text" class="layui-input" lay-verify="required" name="entryTime" id="entryTime">
+            </td>
+            <td>合同到期时间</td>
+            <td>
+                <input type="text" class="layui-input" lay-verify="required" name="contractExpirationDate"
+                       id="contractExpirationDate">
+            </td>
+        </tr>
+        <tr>
+            <td>紧急联系人姓名</td>
+            <td>
+                <input type="text" class="layui-input" lay-verify="required" name="urgentName" id="urgentName">
+            </td>
+            <td>紧急联系人关系</td>
+            <td>
+                <input type="text" class="layui-input" name="urgentRelationship"
+                       id="urgentRelationship">
+            </td>
+        </tr>
+        <tr>
+            <td>紧急联系人联系方式</td>
+            <td>
+                <input type="text" class="layui-input" lay-verify="required" name="urgentPhone" id="urgentPhone">
+            </td>
+            <td>出生地</td>
+            <td>
+                <input type="text" class="layui-input" name="birthplace" id="birthplace">
+            </td>
+        </tr>
+        <tr>
+            <td>住址</td>
+            <td>
+                <input type="text" class="layui-input" lay-verify="required" name="address" id="address">
+            </td>
+            <td>员工分类</td>
+            <td>
+                <input type="radio" name="UserType" value="1" id="DL" title="DL">
+                <input type="radio" name="UserType" value="2" id="IDL" title="IDL">
+                <input type="radio" name="UserType" value="3" id="管理人员" title="管理人员">
+            </td>
+        </tr>
+        <tr>
+            <td>角色属性</td>
+            <td colspan="3">
+                <select lay-search="" lay-verify="required" name="roleId" id="roleId"></select>
+            </td>
+        </tr>
+        <tr>
+            <td>职级</td>
+            <td>
+                <input type="text" class="layui-input" lay-verify="required" name="str1" id="str1">
+            </td>
+            <td>试用期期限</td>
+            <td>
+                <input type="text" class="layui-input" lay-verify="required" name="str2" id="str2">
+            </td>
+        </tr>
+        <tr>
+            <td>身份证附件</td>
+            <td colspan="3">
+                <button type="button" class="layui-btn layui-btn-normal" id="testList">选择文件</button>
+                <button type="button" class="layui-btn" name="testListAction" id="testListAction">开始上传</button>
+                <div class="layui-upload-list">
+                    <table class="layui-table" id="uploadList">
+                        <thead>
+                        <tr>
+                            <th>附件名称</th>
+                            <th>大小</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                        <tr id="up"></tr>
+                        </thead>
+                        <tbody id="demoList"></tbody>
+                    </table>
+                </div>
+                <div class="layui-progress layui-progress-big" lay-showpercent="true" lay-filter="demo">
+                    <div class="layui-progress-bar layui-bg-red" lay-percent="0%"></div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>结婚证附件</td>
+            <td colspan="3">
+                <button type="button" class="layui-btn layui-btn-normal" id="12">选择文件</button>
+                <button type="button" class="layui-btn" name="testListAction" id="12">开始上传</button>
+                <div class="layui-upload-list">
+                    <table class="layui-table" id="12">
+                        <thead>
+                        <tr>
+                            <th>附件名称</th>
+                            <th>大小</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                        <tr id="1"></tr>
+                        </thead>
+                        <tbody id="12"></tbody>
+                    </table>
+                </div>
+                <div class="layui-progress layui-progress-big" lay-showpercent="true" lay-filter="demo">
+                    <div class="layui-progress-bar layui-bg-red" lay-percent="0%"></div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>备注</td>
+            <td colspan="3">
+                <input type="text" class="layui-input" name="marke" id="marke">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="8" style="text-align: center">
+                <button class="layui-btn layui-btn-normal  layui-btn-lg" lay-submit="" name="testListAction"
+                        lay-filter="editButton"><i
+                        class="layui-icon layui-icon-set-fill"></i>修改
+                </button>
+            </td>
+        </tr>
+    </table>
+</form>
+<script>
+    del = function (name) {
+        $("#" + name + "").remove();
+        $.ajax({
+            url: "/file/delete?id=" + name,
+            headers: {
+                token: localStorage.getItem("token")
+            }, success: function (data) {
+                layer.msg(data.mes);
+            }, error: function (data) {
+                layer.msg('网络发送请求出错！请尝试刷新！', {icon: 5});
+            }
+        });
+    }
+    layui.use(['form', 'layer', 'upload', 'element', 'laydate'], function () {
+        let form = layui.form;
+        var $ = layui.$;
+        let userid = $.query.get("userid");
+        let upload = layui.upload;
+        let element = layui.element;
+        let laydate = layui.laydate;
+        let demoListView = $('#demoList');
+        let uploadListIns = upload.render({
+            elem: '#testList',
+            url: '/file/FileUpload?id=' + localStorage.getItem("updateUser"),
+            accept: 'file',
+            multiple: true,
+            progress: function (e, percent) {
+                element.progress('demo', e + '%');
+            },
+            choose: function (obj) {
+                let files = this.files = obj.pushFile();
+                obj.preview(function (index, file, result) {
+                    console.log(index);
+                    var tr = $(['<tr id="upload-' + index + '">'
+                        , '<td>' + file.name + '</td>'
+                        , '<td>' + (file.size / 1014).toFixed(1) + 'kb</td>'
+                        , '<td>等待上传</td>'
+                        , '<td>'
+                        , '<button class="layui-btn layui-btn-xs demo-reload layui-hide">重传</button>'
+                        , '<button class="layui-btn layui-btn-xs layui-btn-danger demo-delete">删除</button>'
+                        , '</td>'
+                        , '</tr>'].join(''));
+                    tr.find('.demo-reload').on('click', function () {
+                        obj.upload(index, file);
+                    });
+                    tr.find('.demo-delete').on('click', function () {
+                        delete files[index];
+                        tr.remove();
+                        uploadListIns.config.elem.next()[0].value = '';
+                    });
+                    demoListView.append(tr);
+                });
+            },
+            done: function (res, index, upload) {
+                if (res.code == 0) {
+                    var tr = demoListView.find('tr#upload-' + index)
+                        , tds = tr.children();
+                    tds.eq(2).html('<span style="color: #5FB878;">上传成功</span>');
+                    tds.eq(3).html('');
+                    return delete this.files[index];
+                }
+                this.error(index, upload);
+            },
+            error: function (index, upload) {
+                let tr = demoListView.find('tr#upload-' + index)
+                    , tds = tr.children();
+                tds.eq(2).html('<span style="color: #FF5722;">上传失败</span>');
+                tds.eq(3).find('.demo-reload').removeClass('layui-hide');
+            }
+        });
+        $.ajax({
+            url: "/file/fileList?uuid=" + userid,
+            headers: {
+                token: localStorage.getItem("token")
+            },
+            success: function (data) {
+                let da = data.data;
+                for (let i = 0; i < da.length; i++) {
+                    let name = da[i].name;
+                    let va = "<tr id='" + da[i].id + "'><td>" + name + "</td><td>" + da[i].code + "kb</td><td>已保存</td><td><a class='layui-btn' onclick='del(" + da[i].id + ")'>删除</a></td></tr>";
+                    demoListView.append(va);
+                }
+            }
+        });
+        $.ajax({
+            url: "/user/GetOneUser?userid=" + userid,
+            headers: {
+                token: localStorage.getItem("token")
+            },
+            success: function (data) {
+                let da = data.data;
+                let deptid = da.deptid;
+                let userid = da.userid;
+                let Education = da.education;
+                laydate.render({
+                    elem: '#day',
+                    value: da.day,
+                    isInitValue: true
+                });
+
+                $("#username").val(da.username);
+                $("#userid").val(userid);
+                $("#idcard").val(da.idcard);
+                $("#marke").val(da.marke);
+                $("#phone").val(da.phone);
+                $("#salary").val(da.salary);
+                $("#NativePlace").val(da.nativePlace);
+
+                $("#size").val(da.size);
+                $("#children").val(da.children);
+                $("#supportTheOld").val(da.supportTheOld);
+                $("#adult").val(da.adult);
+                $("#serious").val(da.serious);
+                $("#renting").val(da.renting);
+                $("#draw").val(da.draw);
+
+                $("#salaryCardNo").val(da.salaryCardNo);
+                $("#threadLength").val(da.threadLength);
+                $("#entryTime").val(da.entryTime);
+                $("#contractExpirationDate").val(da.contractExpirationDate);
+                $("#height").val(da.height);
+                $("#weight").val(da.weight);
+                $("#email").val(da.email);
+                $("#post").val(da.post);
+
+                $("#urgentName").val(da.urgentName);
+                $("#urgentRelationship").val(da.urgentRelationship);
+                $("#urgentPhone").val(da.urgentPhone);
+                $("#birthplace").val(da.birthplace);
+                $("#address").val(da.address);
+                $("#str1").val(da.str1);
+                $("#str2").val(da.str2);
+
+                $("#state" + da.state + "").attr("checked", true);
+                $("#sex" + da.sex + "").attr("checked", true);
+                $("#" + da.userType + "").attr("checked", true);
+                $("#" + da.userState + "").attr("checked", true);
+                $("#" + da.marriage + "").attr("checked", true);
+                let threadLength = da.threadLength;
+                let roleId = da.roleId;
+                $.ajax({
+                    url: "/power/roleList",
+                    headers: {
+                        token: localStorage.getItem("token")
+                    },
+                    success: function (data) {
+                        let da = data.data;
+                        let va = "";
+                        for (let i = 0; i < da.length; i++) {
+                            va += "<option value='" + da[i].id + "'>" + da[i].name + "</option>"
+                        }
+                        $("#roleId").html(va);
+                        $("#roleId").find("option[value=" + roleId + "]").prop("selected", true);
+                        form.render();
+                    }
+                });
+
+                localStorage.setItem("updateUser", userid);
+
+                $.ajax({
+                    url: "/user/SelectUserList",
+                    headers: {
+                        token: localStorage.getItem("token")
+                    }, success: function (data) {
+                        if (data.code == 0) {
+                            let va = data.data;
+                            let vl = "<option value=''>请选择该人所属线长</option>";
+                            for (let i = 0; i < va.length; i++) {
+                                vl += "<option value=" + va[i].code + ">" + va[i].data + "</option>";
+                            }
+                            $("#threadLength").html(vl);
+                            $("#threadLength").find("option[value=" + threadLength + "]").prop("selected", true);
+                            form.render();
+                        } else {
+                            layer.msg(data.mes, {icon: 5});
+                        }
+                    }, error: function (data) {
+                        layer.msg('网络发送请求出错！请尝试刷新！', {icon: 5});
+                    }
+                })
+
+                $.ajax({
+                    url: "/dept/DeList",
+                    datatype: "json",
+                    headers: {
+                        token: localStorage.getItem("token")
+                    },
+                    success: function (data) {
+                        let code = data.code;
+                        if (code == 0) {
+                            let values = "<option value=''>请选择该人所在部门</option>";
+                            let ha = "";
+                            for (let i = 0; i < data.data.length; i++) {
+                                let va = data.data[i].value;
+                                let ti = data.data[i].title;
+                                values += "<option value=" + va + ">" + ti + "</option>";
+                                if (ti == deptid) {
+                                    ha = va;
+                                }
+                            }
+                            $("#deptname").html(values);
+                            $("#deptname").find("option[value=" + ha + "]").prop("selected", true);
+                            form.render();
+                        } else {
+                            parent.layer.msg(data.mes);
+                        }
+                    }, error: function (data) {
+                        layer.msg('网络发送请求出错！请尝试刷新！', {icon: 5});
+                    }
+                });
+
+                $.ajax({
+                    url: "/util/EducationList",
+                    headers: {
+                        token: localStorage.getItem("token")
+                    },
+                    success: function (data) {
+                        let da = data.data;
+                        let values = "<option value=''>请选择或搜索学历名称</option>";
+                        let ha = "";
+                        for (let i = 0; i < da.length; i++) {
+                            let code = da[i].code;
+                            let name = da[i].name;
+                            values += "<option value=" + code + ">" + name + "</option>"
+                            if (name == Education) {
+                                ha = code;
+                            }
+                        }
+                        $("#Education").html(values);
+                        $("#Education").find("option[value=" + ha + "]").prop("selected", true);
+                        form.render();
+                    }
+                });
+            }
+        });
+        form.on('submit(editButton)', function (data) {
+            $.ajax({
+                url: "/user/UpdateData",
+                datatype: "json",
+                data: data.field,
+                headers: {
+                    token: localStorage.getItem("token")
+                },
+                success: function (data) {
+                    let code = data.code;
+                    if (code == 200) {
+                        parent.layer.close(parent.layer.getFrameIndex(window.name));
+                        parent.layer.msg(data.mes);
+                    } else {
+                        parent.layer.msg(data.mes);
+                    }
+                }, error: function (data) {
+                    layer.msg('网络发送请求出错！请尝试刷新！', {icon: 5});
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>公司日程安排表</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" type="text/css" href="/static/css/fullcalendar.css">
+    <link rel="stylesheet" href="/static/layuiadmin/layui/css/layui.css" media="all">
+    <script src="/static/js/jquery.min.js"></script>
+    <style type="text/css">
+        body {
+            font-size: 12px;
+            margin: 0;
+            padding: 0;
+        }
+
+        /*img {*/
+        /*    width: 200px;*/
+        /*    height: 200px;*/
+        /*}*/
+
+        #two > .userList {
+            display: inline-block;
+            width: 400px;
+            margin-left: 17px;
+            margin-top: 10px
+        }
+
+        #one {
+            float: left;
+            /*display: inline-block;*/
+            width: 60%;
+            height: 40%;
+            word-wrap: break-word;
+            /*//   border-bottom: 3px solid red;*/
+        }
+
+        #two {
+            /*display: inline-block;*/
+            float: right;
+            /*position: relative;*/
+            width: 50%;
+            height: 100%;
+            /*border-bottom: 3px solid green;*/
+        }
+
+    </style>
+    <script src='/static/js/jquery-1.9.1.min.js'></script>
+    <script src='/static/js/jquery-ui-1.10.2.custom.min.js'></script>
+    <script src='/static/js/fullcalendar.min.js'></script>
+    <script type="text/javascript">
+        $(function () {
+            layui.use(['table', 'upload'], function () {
+                var layer = layui.layer;
+                Add = function () {
+                    layer.open({
+                        type: 2,
+                        title: '增加排班',
+                        maxmin: true,
+                        shadeColse: true,
+                        area: ['75%', '71%'],
+                        content: 'AddCalendar',
+                        end: function (data) {
+                        }
+                    });
+                };
+                Update = function () {
+                    layer.open({
+                        type: 2,
+                        title: '修改排班',
+                        maxmin: true,
+                        shadeColse: true,
+                        area: ['75%', '71%'],
+                        content: 'UpdateCalendar',
+                    });
+                }
+            });
+
+            $('#calendar').fullCalendar({
+                firstDay: 0,
+                firstHour: 5,
+                header: {
+                    left: 'today prev,next',
+                    center: 'title',
+                    right: 'month,agendaWeek,agendaDay'
+                },
+                editable: true,
+                theme: false,
+                weekMode: 'liquid',
+                timeFormat: 'H:mm',
+                axisFormat: 'H:mm',
+                events: "CaList",
+                dayClick: function (date, allDay, jsEvent, view) {
+                    console.log(date);
+                    console.log(allDay);
+                    console.log(jsEvent);
+                    console.log(view);
+                    Add();
+                },
+                eventClick: function (event, jsEvent, view) {
+                    var id = event._id;
+                    console.log(id);
+                    console.log(event);
+                    console.log(jsEvent);
+                    console.log(view);
+                    addEventSource:  $('#calendar').fullCalendar('addEventSource', "UserListOne");
+                    // rerenderEvents: $('#calendar').fullCalendar('rerenderEvents');
+                    // Update();
+                },
+                eventDrop: function (calEvent, dayDelta, minuteDelta, allDay, revertFunc, jsEvent, ui, view) {
+                    console.log("拖动");
+                    console.log(calEvent);
+                    console.log(dayDelta);
+                    console.log(minuteDelta);
+                    console.log(allDay);
+                    console.log(revertFunc);
+                    console.log(jsEvent);
+                    console.log(ui);
+                    console.log(view);
+                },
+                select: function (startDate, endDate, allDay, jsEvent, view) {
+                    console.log(startDate);
+                    console.log(endDate);
+                    console.log(allDay);
+                    console.log(jsEvent);
+                    console.log(view);
+                },
+                //删除ID为999得行程
+                removeEvents: $('#calendar').fullCalendar('removeEvents', 999)
+
+            });
+        });
+    </script>
+</head>
+<body>
+<script type="text/javascript" src="/static/layuiadmin/layui/layui.js"></script>
+<div id="one">
+    <div id='calendar'></div>
+</div>
+<!--<div id="two">-->
+<!--    <iframe src="/UserMes" id="iframepage" frameborder="0" onload="ifmHeigth()" width="100%"-->
+<!--            class="layadmin-iframe"></iframe>-->
+<!--</div>-->
+<script>
+    window.onresize = function () {
+        ifmHeigth();
+    }
+    ifmHeigth = function () {
+        var ifm = document.getElementById("iframepage");
+        ifm.height = document.documentElement.clientHeight - 10;
+    }
+</script>
+</body>
+</html>

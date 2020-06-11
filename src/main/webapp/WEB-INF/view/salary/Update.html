@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>修改工资明细</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+    <script src="/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.params.js"></script>
+    <style>
+        tr td input {
+            text-align: center;
+        }
+
+        .layui-table td, .layui-table th {
+            position: relative;
+            padding: 4px 4px;
+            min-height: 20px;
+            line-height: 20px;
+            font-size: 14px;
+        }
+
+        .layui-table tbody tr:hover, .layui-table-hover {
+            background-color: transparent;
+        }
+
+        .layui-form-select .layui-select-group dd {
+            padding-left: 20px;
+            color: #1e9fff;
+        }
+    </style>
+</head>
+<body>
+<script src="/static/layui/layui.all.js" charset="UTF-8"></script>
+<form class="layui-form">
+    <table class="layui-table" style="text-align: center">
+        <tr>
+            <td>员工编号</td>
+            <td>
+                <input type="text" class="layui-input" name="userid" id="userid" class="layui-table" disabled readonly style="cursor: not-allowed">
+                <input type="hidden" id="id" name="id">
+            </td>
+            <td>员工姓名</td>
+            <td>
+                <input type="text" class="layui-input" name="username" id="username" class="layui-table" disabled
+                       readonly
+                       style="cursor: not-allowed">
+            </td>
+        </tr>
+        <tr>
+            <td>基本工资</td>
+            <td>
+                <input type="text" class="layui-input" name="basic" id="basic" class="layui-table" disabled readonly
+                       style="cursor: not-allowed">
+            </td>
+
+            <td>小时工资</td>
+            <td>
+                <input type="text" class="layui-input" name="hour" id="hour" class="layui-table" disabled readonly
+                       style="cursor: not-allowed">
+            </td>
+        </tr>
+        <tr>
+            <td>夜班津贴</td>
+            <td>
+                <input type="text" class="layui-input" name="night" id="night">
+            </td>
+
+            <td>个人津贴</td>
+            <td>
+                <input type="text" class="layui-input" name="allowance" id="allowance">
+            </td>
+        </tr>
+        <tr>
+            <td>月度绩效</td>
+            <td>
+                <input type="text" class="layui-input" name="monthPerformance" id="monthPerformance">
+            </td>
+            <td>季度绩效</td>
+            <td>
+                <input type="text" class="layui-input" name="quarterPerformance" id="quarterPerformance">
+            </td>
+        </tr>
+        <tr>
+            <td>年终奖金</td>
+            <td>
+                <input type="text" class="layui-input" name="yearEndBonus" id="yearEndBonus">
+            </td>
+            <td>加班工资</td>
+            <td>
+                <input type="text" class="layui-input" name="overtime" id="overtime">
+            </td>
+        </tr>
+        <tr>
+            <td>年节慰问</td>
+            <td>
+                <input type="text" class="layui-input" name="travel" id="travel" >
+            </td>
+            <td>特别奖项</td>
+            <td>
+                <input type="text" class="layui-input" name="particularlyAawards" id="particularlyAawards">
+            </td>
+        </tr>
+        <tr>
+            <td>差旅补贴</td>
+            <td>
+                <input type="text" class="layui-input" name="festival" id="festival">
+            </td>
+            <td>社保-养老</td>
+            <td>
+                <input type="text" class="layui-input" name="provideForTheAged" id="provideForTheAged" disabled readonly style="cursor: not-allowed">
+            </td>
+        </tr>
+        <tr>
+            <td>社保-工伤</td>
+            <td>
+                <input type="text" class="layui-input" name="occupationalInjury" id="occupationalInjury" disabled readonly style="cursor: not-allowed">
+            </td>
+            <td>社保-医疗</td>
+            <td>
+                <input type="text" class="layui-input" name="medicalTreatment" id="medicalTreatment" disabled readonly style="cursor: not-allowed">
+            </td>
+        </tr>
+        <tr>
+            <td>社保-住房</td>
+            <td>
+                <input type="text" class="layui-input" name="housing" id="housing" disabled readonly style="cursor: not-allowed">
+            </td>
+
+            <td>养老-公司</td>
+            <td>
+                <input type="text" class="layui-input" name="pensionCompany" id="pensionCompany" disabled readonly style="cursor: not-allowed">
+            </td>
+        </tr>
+        <tr>
+            <td>工伤-公司</td>
+            <td>
+                <input type="text" class="layui-input" name="industriakCompany" id="industriakCompany" disabled readonly style="cursor: not-allowed">
+            </td>
+
+            <td>医疗-公司</td>
+            <td>
+                <input type="text" class="layui-input" name="medcalCompany" id="medcalCompany" disabled readonly style="cursor: not-allowed">
+            </td>
+        </tr>
+        <tr>
+            <td>失业-公司</td>
+            <td>
+                <input type="text" class="layui-input" name="unemploymentCompany" id="unemploymentCompany" disabled readonly style="cursor: not-allowed">
+            </td>
+            <td>住房-公司</td>
+            <td>
+                <input type="text" class="layui-input" name="housingCompany" id="housingCompany" disabled readonly style="cursor: not-allowed">
+            </td>
+        </tr>
+        <tr>
+            <td>抵扣项-房贷</td>
+            <td>
+                <input type="text" class="layui-input" name="draw" id="draw" disabled readonly style="cursor: not-allowed">
+            </td>
+
+            <td>抵扣项-子女</td>
+            <td>
+                <input type="text" class="layui-input" name="children" id="children" disabled readonly style="cursor: not-allowed">
+            </td>
+        </tr>
+        <tr>
+            <td>抵扣项-赡养</td>
+            <td>
+                <input type="text" class="layui-input" name="supportTheOld" id="supportTheOld" disabled readonly style="cursor: not-allowed">
+            </td>
+
+            <td>抵扣项-继续教育</td>
+            <td>
+                <input type="text" class="layui-input" name="adult" id="adult" disabled readonly style="cursor: not-allowed">
+            </td>
+        </tr>
+        <tr>
+            <td>抵扣项-租房</td>
+            <td>
+                <input type="text" class="layui-input" name="renting" id="renting" disabled readonly style="cursor: not-allowed">
+            </td>
+
+            <td>抵扣项-大病</td>
+            <td>
+                <input type="text" class="layui-input" name="serious" id="serious" disabled readonly style="cursor: not-allowed">
+            </td>
+        </tr>
+        <tr>
+            <td>请假扣除费用</td>
+            <td>
+                <input type="text" class="layui-input" name="leave" id="leave">
+            </td>
+            <td>旷工</td>
+            <td>
+                <input type="text" class="layui-input" name="absenteeism" id="absenteeism">
+            </td>
+        </tr>
+        <tr>
+            <td>迟到</td>
+            <td>
+                <input type="text" class="layui-input" name="late" id="late">
+            </td>
+            <td>早退</td>
+            <td>
+                <input type="text" class="layui-input" name="early" id="early">
+            </td>
+        </tr>
+        <tr>
+            <td>加钱</td>
+            <td>
+                <input type="text" class="layui-input" name="birthCompany" id="birthCompany">
+            </td>
+            <td>扣钱</td>
+            <td>
+                <input type="text" class="layui-input" name="inDryDock" id="inDryDock">
+            </td>
+        </tr>
+        <tr>
+            <td>备注</td>
+            <td colspan="3">
+                <input type="text" class="layui-input" name="marke" id="marke">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="4" style="text-align: center">
+                <button class="layui-btn layui-btn-normal  layui-btn-lg" lay-submit="" name="testListAction"
+                        lay-filter="editButton"><i
+                        class="layui-icon layui-icon-set-fill"></i>修改
+                </button>
+            </td>
+        </tr>
+    </table>
+</form>
+<script>
+
+    layui.use(['form', 'layer', 'upload', 'element'], function () {
+        let form = layui.form;
+        var $ = layui.$;
+        let id = $.query.get("id");
+        let laydate = layui.laydate;
+        $.ajax({
+            url: "/salary/page?page=1&limit=10&id=" + id,
+            headers: {
+                token: localStorage.getItem("token")
+            },
+            success: function (data) {
+                let da = data.data[0];
+                $("#id").val(da.id);
+                $("#userid").val(da.userid);
+                $("#username").val(da.username);
+                $("#basic").val(da.basic);
+                $("#hour").val(da.hour);
+                $("#night").val(da.night);
+                $("#monthPerformance").val(da.monthPerformance);
+                $("#quarterPerformance").val(da.quarterPerformance);
+                $("#yearEndBonus").val(da.yearEndBonus);
+                $("#overtime").val(da.overtime);
+
+                $("#allowance").val(da.allowance);
+                $("#particularlyAawards").val(da.particularlyAawards);
+                $("#festival").val(da.festival);
+                $("#travel").val(da.travel);
+                $("#provideForTheAged").val(da.provideForTheAged);
+                $("#medicalTreatment").val(da.medicalTreatment);
+
+                $("#housing").val(da.housing);
+                $("#inDryDock").val(da.inDryDock);
+                $("#occupationalInjury").val(da.occupationalInjury);
+                $("#pensionCompany").val(da.pensionCompany);
+                $("#medcalCompany").val(da.medcalCompany);
+                $("#unemploymentCompany").val(da.unemploymentCompany);
+                $("#birthCompany").val(da.birthCompany);
+                $("#industriakCompany").val(da.industriakCompany);
+
+                $("#housingCompany").val(da.housingCompany);
+                $("#children").val(da.children);
+                $("#supportTheOld").val(da.supportTheOld);
+                $("#adult").val(da.adult);
+                $("#draw").val(da.draw);
+
+                $("#renting").val(da.renting);
+                $("#serious").val(da.serious);
+                $("#leave").val(da.leave);
+                $("#late").val(da.late);
+                $("#early").val(da.early);
+                $("#absenteeism").val(da.absenteeism);
+
+            }
+        });
+        form.on('submit(editButton)', function (data) {
+            $.ajax({
+                url: "/salary/updateData",
+                datatype: "json",
+                data: data.field,
+                headers: {
+                    token: localStorage.getItem("token")
+                },
+                success: function (data) {
+                    let code = data.code;
+                    if (code == 200) {
+                        parent.layer.close(parent.layer.getFrameIndex(window.name));
+                        parent.layer.msg(data.mes);
+                    } else {
+                        parent.layer.msg(data.mes);
+                    }
+                }, error: function (data) {
+                    layer.msg('网络发送请求出错！请尝试刷新！', {icon: 5});
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>修改用户排班信息</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+    <script src="/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.params.js"></script>
+</head>
+<body>
+<form class="layui-form">
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">用户名称</label>
+            <div class="layui-input-inline">
+                <input style="text-align: center" class="layui-input" readonly lay-verify="required" name="userId"
+                       id="userid"/>
+                <input readonly type="hidden" lay-verify="required" name="id" id="id"/>
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">开始时间</label>
+            <div class="layui-input-inline">
+                <input style="text-align: center" class="layui-input" readonly lay-verify="required" name="start"
+                       id="start">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">结束时间</label>
+            <div class="layui-input-inline">
+                <input style="text-align: center" type="text" class="layui-input" name="endTime" id="end"
+                       lay-verify="required" readonly>
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">备注</label>
+            <div class="layui-input-inline">
+                <input type="text" class="layui-input" name="marke" id="marke">
+            </div>
+        </div>
+        <div style="text-align: center;">
+            <div style="width: 50%;margin: 0.5rem auto">
+                <button class="layui-btn layui-btn-fluid layui-btn-normal layui-btn-lg" id="Add" lay-submit=""
+                        lay-filter="editButton"><i class="layui-icon">&#xe608;</i>修改
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+<script src="/static/layui/layui.js" charset="UTF-8"></script>
+<script>
+    layui.use(['form', 'laydate'], function () {
+        var form = layui.form;
+        let laydate = layui.laydate;
+        var $ = layui.jquery, layer = layui.layer;
+        let data = eval(parent.JsonData);
+        // $("#sa input").attr("readOnly", "true");
+        let start = data.start;
+        let end = data.endTime;
+        $("#id").val(data.id);
+        $("#userid").val(data.userId);
+        $("#start").val(start);
+        $("#end").val(end);
+        $("#marke").val(data.marke);
+        laydate.render({
+            elem: '#end',
+            value: end,
+            trigger: 'click',
+            zIndex: 99999999,
+            theme: 'grid',
+            position: 'fixed',
+            btns: ['confirm'],
+            type: 'datetime',
+            min: start,
+        });
+        form.on('submit(editButton)', function (data) {
+            $.ajax({
+                url: "/calendar/UpdateData",
+                datatype: "json",
+                data: data.field,
+                headers: {
+                    token: localStorage.getItem("token")
+                },
+                success: function (data) {
+                    let code = data.code;
+                    if (code == 200) {
+                        parent.layer.close(parent.layer.getFrameIndex(window.name));
+                        parent.layer.msg(data.mes);
+                    } else {
+                        parent.layer.msg(data.mes);
+                    }
+                }, error: function (data) {
+                    layer.msg('网络发送请求出错！请尝试刷新！', {icon: 5});
+                }
+            });
+            return false;
+        });
+    })
+</script>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>增加工作日志</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+    <script src="/static/js/jquery.min.js"></script>
+    <style>
+        tr td input {
+            text-align: center;
+        }
+
+        .layui-table td, .layui-table th {
+            position: relative;
+            padding: 4px 4px;
+            min-height: 20px;
+            line-height: 20px;
+            font-size: 14px;
+        }
+
+        .layui-table tbody tr:hover, .layui-table-hover {
+            background-color: transparent;
+        }
+
+        .layui-form-select .layui-select-group dd {
+            padding-left: 20px;
+            color: #1e9fff;
+        }
+    </style>
+</head>
+<body>
+<form class="layui-form">
+    <table class="layui-table" style="text-align: center">
+        <tr>
+            <td>用户ID</td>
+            <td colspan="3">
+                <select lay-search="" lay-verify="required" name="userid" id="userid"></select>
+            </td>
+        </tr>
+        <tr>
+            <td>上班时间</td>
+            <td>
+                <input type="text" class="layui-input" name="goTime" id="goTime" placeholder="yyyy-MM-dd hh:ss:mm"
+                       lay-verify="required">
+            </td>
+            <td>下班时间</td>
+            <td>
+                <input type="text" class="layui-input" name="outTime" id="outTime" placeholder="yyyy-MM-dd hh:ss:mm"
+                       lay-verify="required">
+            </td>
+        </tr>
+        <tr>
+            <td>中午上班时间</td>
+            <td>
+                <input type="text" class="layui-input" name="zGoTime" id="zGoTime" placeholder="yyyy-MM-dd hh:ss:mm"
+                       readonly>
+            </td>
+            <td>中午下班时间</td>
+            <td>
+                <input type="text" class="layui-input" name="zOutTime" id="zOutTime" placeholder="yyyy-MM-dd hh:ss:mm"
+                       readonly>
+            </td>
+        </tr>
+        <tr>
+            <td>异常码</td>
+            <td>
+                <select lay-search="" name="errorCode" id="errorCode">
+                    <option value="">请选择异常码</option>
+                    <option value="迟到">迟到</option>
+                    <option value="早退">早退</option>
+                </select>
+            </td>
+            <td>迟到</td>
+            <td>
+                <input type="text" class="layui-input" name="chidao" id="chidao">
+            </td>
+        </tr>
+        <tr>
+            <td>早退</td>
+            <td colspan="3">
+                <input type="text" class="layui-input" name="zaotui" id="zaotui">
+            </td>
+        </tr>
+        <tr>
+            <td>备注</td>
+            <td colspan="3">
+                <input type="text" class="layui-input" name="marke" id="marke">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="4" style="text-align: center">
+                <button class="layui-btn layui-btn-normal  layui-btn-lg" lay-submit="" name="testListAction"
+                        lay-filter="editButton"><i
+                        class="layui-icon">&#xe608;</i>添加
+                </button>
+            </td>
+        </tr>
+    </table>
+</form>
+<script src="/static/layui/layui.all.js" charset="UTF-8"></script>
+<script>
+    layui.use(['form', 'laydate', 'layer'], function () {
+        var form = layui.form;
+        let laydate = layui.laydate;
+        var $ = layui.$
+            , layer = layui.layer;
+        laydate.render({
+            elem: '#goTime',
+            type: 'datetime',
+            trigger: 'click',
+            zIndex: 99999999,
+            theme: 'grid',
+            position: 'fixed',
+        });
+        laydate.render({
+            elem: '#outTime',
+            type: 'datetime',
+            trigger: 'click',
+            zIndex: 99999999,
+            theme: 'grid',
+            position: 'fixed',
+        });
+        laydate.render({
+            elem: '#zGoTime',
+            type: 'datetime',
+            trigger: 'click',
+            zIndex: 99999999,
+            theme: 'grid',
+            position: 'fixed',
+        });
+        laydate.render({
+            elem: '#zOutTime',
+            type: 'datetime',
+            trigger: 'click',
+            zIndex: 99999999,
+            theme: 'grid',
+            position: 'fixed',
+        });
+        $.ajax({
+            url: "/user/SelectUserList",
+            headers: {
+                token: localStorage.getItem("token")
+            },
+            success: function (data) {
+                if (data.code == 0) {
+                    let va = "<option value=''>请选择人员信息</option>";
+                    for (let i = 0; i < data.data.length; i++) {
+                        va += "<option value='" + data.data[i].code + "'>" + data.data[i].data + "</option>"
+                    }
+                    $("#userid").html(va);
+                    form.render();
+                } else {
+                    layer.msg(data.mes, {icon: 5});
+                }
+            }
+        });
+
+        form.on('submit(editButton)', function (data) {
+            $.ajax({
+                url: "/work/add",
+                datatype: "json",
+                data: data.field,
+                headers: {
+                    token: localStorage.getItem("token")
+                },
+                success: function (data) {
+                    let code = data.code;
+                    if (code == 200) {
+                        parent.layer.close(parent.layer.getFrameIndex(window.name));
+                        parent.layer.msg(data.mes);
+                    } else {
+                        parent.layer.msg(data.mes);
+                    }
+                }, error: function (data) {
+                    layer.msg('网络发送请求出错！请尝试刷新！', {icon: 5});
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

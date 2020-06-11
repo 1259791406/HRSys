@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>访客申请详情</title>
+    <script type="text/javascript" src="/static/public/commonJs.js"></script>
+    <script type="text/javascript" src="/static/public/commonCss.js"></script>
+    <style>
+        html {
+            font-size: 62.5% !important;
+        }
+
+        @media only screen and (min-width: 481px) {
+            html {
+                font-size: 94% !important;
+            }
+        }
+
+        @media only screen and (min-width: 561px) {
+            html {
+                font-size: 109% !important;
+            }
+        }
+
+        @media only screen and (min-width: 641px) {
+            html {
+                font-size: 125% !important;
+            }
+        }
+
+        html {
+            height: 100%
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            height: 100%
+        }
+
+        .content {
+            /*height: 100%;*/
+            max-height: 90%;
+            overflow: auto
+        }
+
+        .divBut {
+            text-align: center;
+            margin: 0.5rem auto;
+        }
+    </style>
+</head>
+<body>
+<div class="content">
+    <table class="table table-bordered" id="mes">
+    </table>
+    <div class="layui-upload">
+        <div class="divBut">
+            <button type="button" class="layui-btn layui-btn-normal" id="testList">选择文件</button>
+            <button type="button" class="layui-btn" id="testListAction">开始上传</button>
+        </div>
+        <div class="layui-upload-list">
+            <table class="layui-table">
+                <thead>
+                <tr>
+                    <th>文件名</th>
+                    <th>大小</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody id="demoList"></tbody>
+            </table>
+        </div>
+        <div class="layui-progress layui-progress-big" lay-showpercent="true" lay-filter="demo">
+            <div class="layui-progress-bar layui-bg-red" lay-percent="0%"></div>
+        </div>
+    </div>
+</div>
+<div class="divBut">
+    <button type="button" onclick="info(1)" class="layui-btn layui-btn-normal">进入</button>
+    <button type="button" onclick="info(2)" class="layui-btn layui-btn-normal">离开</button>
+</div>
+<script>
+
+    layui.use(['upload', 'element'], function () {
+        var $ = layui.jquery, layer = layui.layer;
+        let upload = layui.upload,
+            element = layui.element;
+        let id = $.query.get("id");
+        $.ajax({
+            url: "/Visitor/VisitorPage?marke=1&page=1&limit=10&tableId=" + id,
+            datatype: "json",
+            headers: {
+                token: localStorage.getItem("token")
+            },
+            success: function (data) {
+                if (data.code == 0) {
+                    let da = data.data[0];
+                    let message = "";
+                    message += "<tbody><th scope='col'>来访人</th><th scope='col'>联系方式</th><th scope='col'>被访人</th><th scope='col'>来访理由</th></tbody>";
+                    message += "<tr><td>" + da.visitName + "</td><td>" + da.visitPhone + "</td><td>" + da.userId + "</td><td>" + da.visitType + "</td></tr>";
+                    message += "<tbody><th scope='col'>人数</th><th scope='col'>单位</th><th>填写时间</th><th>被访部门</th></tbody>";
+                    message += "<tr><td>" + da.visitNum + "</td><td>" + da.visitCompany + "</td><td>" + da.time + "</td><td>" + da.deptName + "</td></tr>";
+                    message += "<th scope='col' colspan='4' style='text-align:center;vertical-align:middle;'>备注</th>";
+                    message += "<tr><td colspan='5' style='color: #0053ad;font-size: 2rem'>" + da.marke + "</td></tr>";
+                    message += "<th scope='col' colspan='4' style='text-align:center;vertical-align:middle;color: red'>附件管理</th>";
+                    $.ajax({
+                        url: "/file/fileList?uuid=" + id,
+                        datatype: "json",
+                        headers: {
+                            token: localStorage.getItem("token")
+                        },
+                        success: function (data) {
+                            if (data.code == 200) {
+                                for (let i = 0; i < data.data.length; i++) {
+                                    message += "<tr><td colspan='4'><a href='/static/uploadFile/" + data.data[i].marke + "'>" + data.data[i].name + "</a></td></tr>";
+                                }
+                                $("#mes").html(message);
+                            } else {
+                                layer.msg('附件获取失败！', {icon: 5});
+                            }
+                        },
+                    });
+                } else {
+                    layer.msg('数据获取失败！', {icon: 5});
+                }
+            },
+        });
+
+        let demoListView = $('#demoList');
+        let uploadListIns = upload.render({
+            elem: '#testList',
+            url: '/file/FileUpload?id=' + id,
+            accept: 'file',
+            multiple: true,
+            auto: false,
+            bindAction: '#testListAction',
+            progress: function (e, percent) {
+                console.log("进度：" + percent);
+                console.log(percent);
+                element.progress('demo', percent + '%');
+            }
+            , choose: function (obj) {
+                let files = this.files = obj.pushFile();
+                obj.preview(function (index, file, result) {
+                    var tr = $(['<tr id="upload-' + index + '">'
+                        , '<td>' + file.name + '</td>'
+                        , '<td>' + (file.size / 1014).toFixed(1) + 'kb</td>'
+                        , '<td>等待上传</td>'
+                        , '<td>'
+                        , '<button class="layui-btn layui-btn-xs demo-reload layui-hide">重传</button>'
+                        , '<button class="layui-btn layui-btn-xs layui-btn-danger demo-delete">删除</button>'
+                        , '</td>'
+                        , '</tr>'].join(''));
+                    tr.find('.demo-reload').on('click', function () {
+                        obj.upload(index, file);
+                    });
+                    tr.find('.demo-delete').on('click', function () {
+                        delete files[index];
+                        tr.remove();
+                        uploadListIns.config.elem.next()[0].value = '';
+                    });
+                    demoListView.append(tr);
+                });
+            }
+            , done: function (res, index, upload) {
+                if (res.code == 0) {
+                    var tr = demoListView.find('tr#upload-' + index)
+                        , tds = tr.children();
+                    tds.eq(2).html('<span style="color: #5FB878;">上传成功</span>');
+                    tds.eq(3).html('');
+                    return delete this.files[index];
+                }
+                this.error(index, upload);
+            }
+            , error: function (index, upload) {
+                let tr = demoListView.find('tr#upload-' + index)
+                    , tds = tr.children();
+                tds.eq(2).html('<span style="color: #FF5722;">上传失败</span>');
+                tds.eq(3).find('.demo-reload').removeClass('layui-hide');
+            }
+        });
+        info = function (type) {
+            $.ajax({
+                url: "/Visitor/info?type=" + type + '&id=' + id,
+                datatype: "json",
+                headers: {
+                    token: localStorage.getItem("token")
+                },
+                success: function (data) {
+                    if (data.code == 200) {
+                        layer.msg(data.mes);
+                        setTimeout(function () {
+                            location.reload();
+                        }, 2000);
+                    } else {
+                        layer.msg(data.mes, {icon: 5});
+                    }
+                },
+            });
+        }
+    });
+</script>
+</body>
+</html>

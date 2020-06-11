@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>请假列表</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+    <script src="/static/js/jquery.min.js"></script>
+    <style>
+        .layui-table td, .layui-table th {
+            position: relative;
+            padding: 9px 0px;
+            min-height: 20px;
+            line-height: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<script id="demo" type="text/html">
+    <table class="layui-table" style="text-align: center">
+        <tr>
+            <td>请假人</td>
+            <td>请假时间</td>
+            <td>时长</td>
+            <td>类型</td>
+            <td>状态</td>
+            <td>备注</td>
+        </tr>
+        {{# layui.each(d.data, function(index, item){ }}
+        <tr>
+            <td>{{ item.userid}}</td>
+            <td>{{ item.time}}</td>
+            <td>{{ item.duration}}</td>
+            <td>{{ item.str1}}</td>
+            <td>{{ item.state}}</td>
+            <td>{{ item.marke}}</td>
+        </tr>
+        {{# }); }}
+    </table>
+
+</script>
+
+<div id="view"></div>
+<div style="width: 50%;margin: 0.5rem auto">
+    <button class="layui-btn layui-btn-fluid layui-btn-normal layui-btn-lg" id="Add" lay-submit=""
+            lay-filter="editButton"><i class="layui-icon">&#xe608;</i>添加
+    </button>
+</div>
+<script type="text/javascript" src="/static/layui/layui.js"></script>
+<script>
+    layui.use(['laytpl', 'layer', 'laypage'], function () {
+        var laytpl = layui.laytpl;
+        var layer = layui.layer;
+        var laypage = layui.laypage;
+        var $ = layui.jquery, layer = layui.layer;
+
+        $("#Add").click(function () {
+            window.location.href = '/Leeave/add';
+        });
+
+        function PomainData(id) {
+            $.ajax({
+                url: "/Leeave/page?limit=8&page=" + id,
+                success: function (da) {
+                    if (da.code == 0) {
+                        laypage.render({
+                            elem: 'demo4',
+                            count: da.size,
+                            first: false,
+                            last: false,
+                            curr: id,
+                            limit: 8,
+                            jump: function (obj, first) {
+                                if (!first) {
+                                    PomainData(obj.curr);
+                                }
+                            }
+                        });
+                        let getTpl = demo.innerHTML;
+                        let view = document.getElementById('view');
+                        laytpl(getTpl).render(da, function (html) {
+                            view.innerHTML = html;
+                        });
+                    } else {
+                        layer.open({
+                            content: '发生错误！将此页面截图发送给开发人员，谢谢！错误为：' + da.mes,
+                            btn: ['确定', '返回'],
+                            yes: function (index) {
+                                window.history.go(-1);
+                            },
+                            no: function (index) {
+                                window.history.go(-1);
+                            }
+                        });
+                    }
+                },
+                error: function (data) {
+                    layer.open({
+                        content: data.mes
+                        , skin: 'msg'
+                        , time: 2 //2秒后自动关闭
+                    });
+                }
+            });
+        }
+
+        PomainData(1);
+    });
+</script>
+</body>
+</html>

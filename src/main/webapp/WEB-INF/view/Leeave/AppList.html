@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>审批请假单</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/layuiadmin/layui/layui.js" charset="UTF-8"></script>
+    <script src="/static/layuiadmin/layui/layer.js" charset="UTF-8"></script>
+    <style>
+        .layui-table td, .layui-table th {
+            position: relative;
+            padding: 9px 0px;
+            min-height: 20px;
+            line-height: 20px;
+            font-size: 14px;
+        }
+
+        .content {
+            height: 100%;
+            max-height: 85%;
+            overflow: auto
+        }
+
+        .demo4 {
+            text-align: center;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+<script id="demo" type="text/html">
+    <table class="layui-table" style="text-align: center">
+        <tr>
+            <td>请假人</td>
+            <td>开始时间</td>
+            <td>天数</td>
+            <td>类型</td>
+            <td>备注</td>
+            <td>审批</td>
+            <td>查审</td>
+        </tr>
+        {{# layui.each(d.data, function(index, item){ }}
+        <tr>
+            <td>{{ item.userid}}</td>
+            <td>{{ item.time}}</td>
+            <td>{{ item.duration}}</td>
+            <td>{{ item.str1}}</td>
+            <td>{{ item.marke}}</td>
+            <td>
+                <i class="layui-icon layui-icon-edit" onclick="sp({{item.code}})"></i>
+            </td>
+            <td>
+                <i class="layui-icon layui-icon-survey" onclick="cs({{item.code}})"></i>
+            </td>
+        </tr>
+        {{# }); }}
+    </table>
+</script>
+<div id="view" class="content"></div>
+<div id="demo4" class="demo4"></div>
+<script>
+    layui.use(['laytpl', 'laypage', 'layer'], function () {
+        var laytpl = layui.laytpl;
+        var laypage = layui.laypage;
+        var $ = layui.jquery, layer = layui.layer;
+
+        function PomainData(id) {
+            $.ajax({
+                url: "/Leeave/page?limit=8&page=" + id,
+                success: function (da) {
+                    if (da.code == 0) {
+                        laypage.render({
+                            elem: 'demo4',
+                            count: da.count,
+                            first: false,
+                            last: false,
+                            curr: id,
+                            limit: 8,
+                            jump: function (obj, first) {
+                                if (!first) {
+                                    PomainData(obj.curr);
+                                }
+                            }
+                        });
+                        let getTpl = demo.innerHTML;
+                        let view = document.getElementById('view');
+                        laytpl(getTpl).render(da, function (html) {
+                            view.innerHTML = html;
+                        });
+                    } else {
+                        layer.open({
+                            content: '发生错误！将此页面截图发送给开发人员，谢谢！错误为：' + da.mes,
+                            btn: ['确定', '返回'],
+                            yes: function (index) {
+                                window.history.go(-1);
+                            },
+                            no: function (index) {
+                                window.history.go(-1);
+                            }
+                        });
+                    }
+                },
+                error: function (data) {
+                    layer.open({
+                        content: data.mes
+                        , skin: 'msg'
+                        , time: 2
+                    });
+                }
+            });
+        }
+
+        PomainData(1);
+        sp = function (id) {
+            layer.open({
+                title: ['审核意见', 'background-color:#8DCE16; color:#fff;'],
+                anim: 'up',
+                content: '<textarea type="text" class="layui-textarea" id="textarea" placeholder="请输入审核意见，如无则不用输入！" ></textarea>',
+                btn: ['同意', '驳回'],
+                yes: function (index) {
+                    $.ajax({
+                        url: "/Leeave/Approval",
+                        type: "POST",
+                        datatype: "json",
+                        async: false,
+                        data: {
+                            code: id,
+                            userid: localStorage.getItem("id"),
+                            state: 2,
+                            Opinion: $('#textarea').val(),
+                            orderNum: localStorage.getItem("OvertimeNum"),
+                        },
+                        success: function (data) {
+                            let mess = data.mes;
+                            layer.closeAll();
+                            if (data.code == 200) {
+                                layer.msg(mess);
+                                setTimeout(function () {
+                                    location.reload();
+                                }, 1500);
+                            } else {
+                                layer.msg(mess, {icon: 5});
+                                setTimeout(function () {
+                                    location.reload();
+                                }, 2000);
+                            }
+                        },
+                        error: function (da) {
+                            errorAll();
+                        }
+                    })
+                },
+                btn2: function (index) {
+                    $.ajax({
+                        url: "/Leeave/Approval",
+                        type: "POST",
+                        datatype: "json",
+                        async: false,
+                        data: {
+                            code: id,
+                            userid: localStorage.getItem("id"),
+                            state: 3,
+                            Opinion: $('#textarea').val(),
+                            orderNum: localStorage.getItem("OvertimeNum"),
+                        },
+                        success: function (data) {
+                            var mess = data.mes;
+                            layer.closeAll();
+                            if (data.code == 200) {
+                                layer.open({
+                                    content: mess
+                                    , skin: 'msg'
+                                    , time: 2
+                                });
+                                setTimeout(function () {
+                                    window.history.go(-1);
+                                }, 2000);
+                            } else if (data.code == 300) {
+                                layer.open({
+                                    content: mess
+                                    , skin: 'msg'
+                                    , time: 2
+                                });
+                                setTimeout(function () {
+                                    window.history.go(-1);
+                                }, 2000);
+                            } else {
+                                layer.open({
+                                    content: '发生异常错误！'
+                                    , skin: 'msg'
+                                    , time: 2
+                                });
+                            }
+                        },
+                        error: function (data) {
+                            errorAll();
+                        }
+                    })
+                }
+            });
+        };
+
+        cs = function (id) {
+            $.ajax({
+                url: "/task/GetTableList?code=" + id,
+                async: false,
+                success: function (data) {
+                    let mmm = "<div class='layui-form'><table class='layui-table'><thead><tr><th>处理人</th><th>时间</th><th>处理方式</th><th>意见</th></tr></thead><tbody>";
+                    let mes = "";
+                    let wei = "</tbody></table></div>";
+                    let da = data.data;
+                    if (data.code == 200) {
+                        $.each(da, function (index) {
+                            let userName = da[index].userid;
+                            let userTime = da[index].time;
+                            let TaskName = da[index].state;
+                            let name = da[index].opinion;
+                            mes += "<tr ><td>" + userName + "</td><td>" + userTime + "</td><td>" + TaskName + "</td><td style='color:red;'>" + name + "</td></tr>";
+                        });
+                        var kk = mmm + mes + wei;
+                        layer.open({
+                            type: 1,
+                            content: kk,
+                            anim: 'up',
+                            area: ['80%', '80%'],
+                            style: 'position:fixed; bottom:0; left:0; width: 100%; max-width:207px;height: auto; max-height: 60%;padding:10px 0; border:none;overflow-x:auto;overflow-y:auto;'
+                        });
+                    } else {
+                        layer.open({
+                            content: data.mes + "暂不支持查询功能！"
+                            , skin: 'msg'
+                            , time: 2
+                        });
+                    }
+                },
+                error: function (da) {
+                    errorAll();
+                }
+            })
+        }
+
+        function errorAll() {
+            layer.open({
+                content: '网络连接失败，请尝试刷新或更换网络后再试！'
+                , skin: 'msg'
+                , time: 2
+            });
+        };
+    })
+</script>
+</body>
+</html>

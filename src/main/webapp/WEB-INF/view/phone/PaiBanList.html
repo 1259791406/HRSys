@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>未来一周排班列表</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+    <script src="/static/js/jquery.min.js"></script>
+    <style>
+        .layui-table td, .layui-table th {
+            position: relative;
+            padding: 9px 0px;
+            min-height: 20px;
+            line-height: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<script id="demo" type="text/html">
+    <table class="layui-table" style="text-align: center">
+        <tr>
+            <td>日期</td>
+            <td>开始时间</td>
+            <td>结束时间</td>
+        </tr>
+        {{# layui.each(d.data, function(index, item){ }}
+        <tr>
+            <td>{{ item.code}}</td>
+            <td>{{ item.data }}</td>
+            <td>{{ item.mes}}</td>
+        </tr>
+        {{# }); }}
+    </table>
+
+</script>
+
+<div id="view"></div>
+
+<script type="text/javascript" src="/static/layui/layui.js"></script>
+<script>
+    layui.use(['laytpl', 'layer'], function () {
+        var laytpl = layui.laytpl;
+        var layer = layui.layer;
+        $.ajax({
+            url: "/calendar/GetWeekUser?userid=" + localStorage.getItem("id"),
+            headers: {
+                token: localStorage.getItem("token")
+            },
+            success: function (data) {
+                if (data.code == 200) {
+                    let getTpl = demo.innerHTML;
+                    let view = document.getElementById('view');
+                    laytpl(getTpl).render(data, function (html) {
+                        view.innerHTML = html;
+                    });
+                } else {
+                    layer.msg(data.mes, {icon: 5});
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>

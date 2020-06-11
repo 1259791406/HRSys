@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>报销单详情</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/layuiadmin/layui/css/layui.css" media="all">
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/jquery.params.js"></script>
+</head>
+<body>
+<table class="layui-hide" id="test"></table>
+<script type="text/javascript" src="/static/layuiadmin/layui/layui.js"></script>
+<script>
+    var orderid = $.query.get("code");
+    layui.use('table', function () {
+        var table = layui.table;
+        table.render({
+            elem: '#test'
+            , url: '/Reimbursement/detil?code=' + orderid
+            , cellMinWidth: 80
+            , parseData: function (res) {
+                let mes = res.mes;
+                layer.msg(mes);
+            }
+            , cols: [[
+                {field: 'code', width: 73, title: '唯一编码', align: 'center'},
+                {field: 'type', width: 73, title: '报销类型', align: 'center'}
+                , {field: 'startTime', width: 155, title: '开始时间', align: 'center'}
+                , {field: 'endTime', width: 90, title: '结束时间', align: 'center'}
+                , {field: 'price', title: '金额', align: 'center', style: 'color: red;', width: 105}
+                , {field: 'subjectCode', width: 100, title: '编码', align: 'center', style: 'color: red;'}
+                , {field: 'marke', title: '备注', width: 100, align: 'center', style: 'color: red;'}
+                , {field: 'c', title: '事由', width: 110, sort: true, align: 'center', style: 'color: red;'}
+            ]]
+        })
+        ;
+    });
+</script>
+</body>
+</html>

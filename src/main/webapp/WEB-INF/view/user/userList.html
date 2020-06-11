@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户列表</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+    <script src="/static/js/jquery.min.js"></script>
+</head>
+<body>
+<div style="margin:0 auto;text-align:center;margin-top: 15px">
+    <div class="demoTable">
+        <table style="text-align: center;margin:auto;width: 100%">
+            <tr>
+                <td>用户姓名</td>
+                <td>
+                    <input class="layui-input" name="username" id="username">
+                </td>
+                <td>身份证</td>
+                <td>
+                    <input class="layui-input" name="idcard" id="idcard">
+                </td>
+                <td>联系电话</td>
+                <td>
+                    <input class="layui-input" name="phone" id="phone">
+                </td>
+            </tr>
+        </table>
+        <div style="margin-top: 10px">
+            <button class="layui-btn layui-btn-normal" data-type="synchro"><i class="layui-icon">&#xe615;</i>同步</button>
+            <button class="layui-btn layui-btn-normal" data-type="reload"><i class="layui-icon">&#xe615;</i>搜索</button>
+<!--            <button class="layui-btn layui-btn-normal" data-type="Add"><i class="layui-icon">&#xe608;</i>添加</button>-->
+        </div>
+    </div>
+</div>
+<table class="layui-hide" id="test" lay-filter="test"></table>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="file">附件</a>
+    <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="update">修改</a>
+</script>
+<script type="text/javascript" src="/static/layui/layui.js"></script>
+<script>
+    layui.use(['table', 'upload'], function () {
+        var table = layui.table,
+            layer = layui.layer,
+            form = layui.form;
+        var $ = layui.jquery, layer = layui.layer;
+        table.render({
+            elem: '#test',
+            url: '/user/UserList',
+            title: '用户列表',
+            height: 'full-160',
+            headers: {token: localStorage.getItem("token")},
+            page: {
+                layout: ['limit', 'count', 'prev', 'page', 'next', 'skip']
+                , groups: 3
+                , first: true
+                , last: true
+            },
+            parseData: function (res) {
+                layer.msg(res.mes);
+            },
+            limit: 20,
+            limits: [20, 40, 60, 80, 100],
+            cols: [[
+                {
+                    align: 'center', width: 100, title: '序号',
+                    templet: function (d) {
+                        return d.LAY_INDEX;
+                    }
+                },
+                {align: 'center', field: 'time', title: '添加日期', width: 160},
+                {align: 'center', field: 'time', title: '修改时间', width: 160},
+                {align: 'center', field: 'userid', title: '员工工号', width: 110},
+                {align: 'center', field: 'username', title: '用户姓名', width: 110},
+                {
+                    align: 'center', field: 'sex', title: '性别', width: 60, templet: function (d) {
+                        let stx = d.sex;
+                        if (stx == 1) {
+                            return '<a class="layui-icon layui-icon-male" style="color:#0002ff;"></a>';
+                        } else if (stx == 2) {
+                            return '<a class ="layui-icon layui-icon-female" style="color:#F581B1;"></a>';
+                        } else {
+                            return '<a class = "layui-icon layui-icon-help" style="color:red;"></a>';
+                        }
+                    },
+                },
+                {align: 'center', field: 'idcard', title: '身份证', width: 200},
+                {field: 'phone', title: '联系电话', width: 140},
+                {field: 'day', title: '出生日期', width: 120},
+                {align: 'center', field: 'age', title: '年龄', width: 60},
+                {align: 'center', field: 'deptid', title: '所属部门', width: 100},
+                {align: 'center', field: 'reserve13', title: '人员分类', width: 100},
+                {align: 'center', field: 'salary', title: '基本工资', width: 100},
+                {align: 'center', field: 'size', title: '工作时长', width: 100},
+                {align: 'center', field: 'children', title: '子女教育', width: 100},
+                {align: 'center', field: 'supportTheOld', title: '赡养老人', width: 100},
+                {align: 'center', field: 'adult', title: '继续教育', width: 100},
+                {align: 'center', field: 'serious', title: '大病医疗', width: 100},
+                {align: 'center', field: 'renting', title: '租房租金', width: 100},
+                {align: 'center', field: 'draw', title: '买房贷款利息', width: 120},
+
+                {align: 'center', field: 'urgentName', title: '紧急联系人姓名', width: 160},
+                {align: 'center', field: 'urgentRelationship', title: '紧急联系人关系', width: 160},
+                {align: 'center', field: 'urgentPhone', title: '紧急联系人方式', width: 160},
+                {field: 'marke', title: '备注'},
+                {align: 'center', fixed: 'right', title: '操作', toolbar: '#barDemo', width: 115}
+            ]],
+            id: 'testReload',
+            page: true
+        })
+        var $ = layui.$, active = {
+            reload: function () {
+                table.reload('testReload', {
+                    id: 'test',
+                    page: {
+                        curr: 1
+                    }, where: {
+                        username: $('#username').val(),
+                        idcard: $('#idcard').val(),
+                        phone: $('#phone').val(),
+                        deptid: $('#deptid').val(),
+                    }
+                }, 'data');
+            },
+            Add: function () {
+                layer.open({
+                    id: 'addUser',
+                    type: 2,
+                    title: '用户信息',
+                    maxmin: true,
+                    shadeColse: true,
+                    area: ['75%', '60%'],
+                    content: '/userAdd',
+                    end: function (data) {
+                        table.reload('testReload', {
+                            id: 'test',
+                            page: {
+                                curr: $(".layui-laypage-em").next().html()
+                            }
+                        }, 'data');
+                    }
+                });
+            }, synchro: function () {
+                $.ajax({
+                    url: "/user/synchro",
+                    headers: {
+                        token: localStorage.getItem("token")
+                    },
+                    success: function (data) {
+                        layer.msg(data.mes);
+                        table.reload('testReload', {
+                            id: 'test',
+                            page: {
+                                curr: $(".layui-laypage-em").next().html()
+                            }
+                        }, 'data');
+                    }
+                });
+            }
+        };
+        $('.demoTable .layui-btn').on('click', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+        table.on('tool(test)', function (obj) {
+            let data = obj.data;
+            let id = data.userid;
+            console.log(id);
+            console.log(data);
+            let eve = obj.event;
+            let username = data.username;
+            let userid = data.userid;
+            if (eve === 'update') {
+                layer.open({
+                    type: 2,
+                    title: '修改用户：' + username + ' 个人信息',
+                    maxmin: true,
+                    shadeColse: true,
+                    area: ['80%', '85%'],
+                    content: '/user/update?userid=' + id,
+                    end: function (data) {
+                        table.reload('testReload', {
+                            id: 'test',
+                            page: {
+                                curr: $(".layui-laypage-em").next().html()
+                            }
+                        }, 'data');
+                    }
+                });
+            } else if (eve === 'file') {
+                $.ajax({
+                    url: "/file/fileList",
+                    data: {
+                        uuid: userid
+                    },
+                    headers: {
+                        token: localStorage.getItem("token")
+                    },
+                    success: function (data) {
+                        let tou = "<table class=\"layui-table\"><tbody><tr><td colspan='2' style='text-align: center;'>此人上传结果如下</td></tr>";
+                        let xinxi = "";
+                        let da = data.data;
+                        for (let i = 0; i < da.length; i++) {
+                            xinxi += "<tr><td style='color:red;'><a download='' href='/static/uploadFile/" + da[i].marke + "'>" + da[i].name + "</a></td></tr>";
+                        }
+                        layer.open({
+                            title: '用户：' + username + ' 所有附件信息',
+                            type: 1,
+                            content: tou + xinxi + "</tbody></table>",
+                            anim: 'up',
+                            area: ['50%', '50%'],
+                            style: 'position:fixed; bottom:0; left:0; width: 100%; height: auto; max-height: 60%;padding:10px 0; border:none;overflow-x:auto;overflow-y:auto;',
+                            cancel: function (index, layero) {
+                                table.reload('testReload', {
+                                    id: 'test',
+                                    page: {
+                                        curr: $(".layui-laypage-em").next().html()
+                                    }, where: {
+                                        username: $('#username').val(),
+                                        idcard: $('#idcard').val(),
+                                        phone: $('#phone').val(),
+                                        deptid: $('#deptid').val(),
+                                    }
+                                }, 'data');
+                            }
+                        });
+                    }
+                });
+            } else if (eve === 'power') {
+                layer.open({
+                    type: 2,
+                    title: '修改用户：' + username + ' 权限信息',
+                    maxmin: true,
+                    shadeColse: true,
+                    area: ['80%', '85%'],
+                    content: '/power/list?userid=' + id,
+                    end: function (data) {
+                        table.reload('testReload', {
+                            id: 'test',
+                            page: {
+                                curr: $(".layui-laypage-em").next().html()
+                            }
+                        }, 'data');
+                    }
+                });
+            }
+        });
+    })
+</script>
+</body>
+</html>

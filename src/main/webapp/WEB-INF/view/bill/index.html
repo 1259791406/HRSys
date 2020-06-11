@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>审批流设置</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+    <script src="/static/layuiadmin/layui/layui.all.js" charset="UTF-8"></script>
+    <script src="/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/tableSelect.js"></script>
+    <style>
+        input {
+            text-align: center;
+        }
+
+        .layui-form-select .layui-select-group dd {
+            padding-left: 20px;
+            color: #1e9fff;
+        }
+
+        /*更改table鼠标触碰变色的问题*/
+        .layui-table tbody tr:hover, .layui-table-hover {
+            background-color: transparent;
+        }
+
+        .layui-table td, .layui-table th {
+            position: relative;
+            padding: 5px 5px;
+            min-height: 20px;
+            line-height: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<form class="layui-form">
+    <table class="layui-table">
+        <tr>
+            <td>单据类型</td>
+            <td>
+                <select name="type" id="type" lay-filter="type" lay-search=""></select>
+            </td>
+            <td>部门信息</td>
+            <td>
+                <select name="dept" id="dept" lay-filter="dept" lay-search=""></select>
+            </td>
+        </tr>
+        <tr>
+            <td>操作</td>
+            <td colspan="3" style="text-align: center">
+                <button type="button" class="layui-btn" onclick="chaxun()">查询</button>
+                <button class="layui-btn layui-btn-normal  layui-btn-lg" lay-submit="" lay-filter="editButton"><i
+                        class="layui-icon">&#xe608;</i>确定
+                </button>
+            </td>
+        </tr>
+        <tr>
+            <td>审批人</td>
+            <td>
+                <input type="hidden" name="list[0].code">
+                <input class="layui-input" name="list[0].userid" type="hidden" id="user1">
+                <input type="text" class="layui-input" id="user_1" lay-verify="required" autocomplete="off">
+            </td>
+        </tr>
+        <tr>
+            <td>审批人</td>
+            <td>
+                <input type="hidden" name="list[1].code">
+                <input class="layui-input" name="list[1].userid" type="hidden" id="user2">
+                <input type="text" class="layui-input" id="user_2">
+            </td>
+        </tr>
+        <tr>
+            <td>审批人</td>
+            <td>
+                <input type="hidden" name="list[2].code">
+                <input class="layui-input" name="list[2].userid" type="hidden" id="user3">
+                <input type="text" class="layui-input" id="user_3">
+            </td>
+
+        </tr>
+        <tr>
+            <td>审批人</td>
+            <td>
+                <input type="hidden" name="list[3].code">
+                <input class="layui-input" name="list[3].userid" type="hidden" id="user4">
+                <input type="text" class="layui-input" id="user_4">
+            </td>
+        </tr>
+        <tr>
+            <td>审批人</td>
+            <td>
+                <input type="hidden" name="list[4].code">
+                <input class="layui-input" name="list[4].userid" type="hidden" id="user5">
+                <input type="text" class="layui-input" id="user_5">
+            </td>
+        </tr>
+        <tr>
+            <td>审批人</td>
+            <td>
+                <input type="hidden" name="list[5].code">
+                <input class="layui-input" name="list[5].userid" type="hidden" id="user6">
+                <input type="text" class="layui-input" id="user_6">
+            </td>
+        </tr>
+        <tr>
+            <td>审批人</td>
+            <td>
+                <input type="hidden" name="list[6].code">
+                <input class="layui-input" name="list[6].userid" type="hidden" id="user7">
+                <input type="text" class="layui-input" id="user_7">
+            </td>
+        </tr>
+        <tr>
+            <td>审批人</td>
+            <td>
+                <input type="hidden" name="list[7].code">
+                <input class="layui-input" name="list[7].userid" type="hidden" id="user8">
+                <input type="text" class="layui-input" id="user_8">
+            </td>
+        </tr>
+        <tr>
+            <td>审批人</td>
+            <td>
+                <input type="hidden" name="list[8].code">
+                <input class="layui-input" name="list[8].userid" type="hidden" id="user9">
+                <input type="text" class="layui-input" id="user_9">
+            </td>
+        </tr>
+        <tr>
+            <td>审批人</td>
+            <td>
+                <input type="hidden" name="list[9].code">
+                <input class="layui-input" name="list[9].userid" type="hidden" id="user10">
+                <input type="text" class="layui-input" id="user_10">
+            </td>
+        </tr>
+    </table>
+</form>
+<script>
+    layui.use(['form'], function () {
+        var form = layui.form;
+        var $ = layui.jquery, layer = layui.layer;
+        let tableSelect = layui.tableSelect;
+        let nn = ["#user_1", "#user_2", "#user_3", "#user_4", "#user_5", "#user_6", "#user_7", "#user_8", "#user_9", "#user_10"];
+        for (let i = 0; i < nn.length; i++) {
+            tableSelect.render({
+                elem: nn[i],
+                checkedKey: 'username',
+                searchKey: 'username',
+                table: {
+                    url: '/user/UserList',
+                    cols: [[
+                        {type: 'radio'},
+                        {field: 'userid', title: 'ID', hide: true},
+                        {field: 'username', title: '用户名称'},
+                        {field: 'deptid', title: '部门名称'},
+                    ]]
+                },
+                done: function (elem, data) {
+                    let id = elem[0].id;
+                    let new_id = id.substring(5, 10);
+                    let na = "[name='list[" + (new_id - 1) + "].userid']";
+                    if (data.data.length == 0) {
+                        $(id).val(name);
+                        $(na).val(code);
+                    } else {
+                        let name = data.data[0].username;
+                        let code = data.data[0].userid;
+                        $("#" + id).val(name);
+                        $(na).val(code);
+                    }
+                }
+            })
+        }
+        chaxun = function () {
+            let type = $("#type").val();
+            let dept = $("#dept").val();
+            if (type == null || type == "") {
+                layer.msg('请选择一个单据类型', {icon: 5});
+                return false;
+            }
+            if (type == null || type == "") {
+                layer.msg('请选择部门信息', {icon: 5});
+                return false;
+            }
+            for (let i = 0; i < 10; i++) {
+                $("#user" + (i + 1)).val("");
+                $("#user_" + (i + 1)).val("");
+                let na = "[name='list[" + i + "].code']";
+                $(na).val("");
+            }
+            $.ajax({
+                url: "/bill/taskList",
+                data: {
+                    table_id: type,
+                    depe_id: dept
+                },
+                headers: {
+                    token: localStorage.getItem("token")
+                },
+                success: function (data) {
+                    if (data.code == 200) {
+                        let da = data.data;
+                        if (da.length < 1) {
+                            localStorage.removeItem("table_code");
+                            layer.msg('请先添加该部门该单据的审批流信息！', {icon: 5});
+                            for (let i = 0; i < 10; i++) {
+                                $("#user" + (i + 1)).val("");
+                                $("#user_" + (i + 1)).val("");
+                                let na = "[name='list[" + i + "].code']";
+                                $(na).val("");
+                            }
+                        } else {
+                            localStorage.setItem("table_code", da[0].code);
+                            for (let i = 0; i < da.length; i++) {
+                                $("#user" + (i + 1)).val(da[i].userid);
+                                $("#user_" + (i + 1)).val(da[i].username);
+                                let na = "[name='list[" + i + "].code']";
+                                $(na).val(da[i].code);
+                            }
+                        }
+                    }
+                }, error: function (data) {
+                    layer.msg('网络发送请求出错！请尝试刷新！', {icon: 5});
+                }
+            });
+        }
+        $.ajax({
+            url: "/bill/list",
+            headers: {
+                token: localStorage.getItem("token")
+            },
+            success: function (data) {
+                if (data.code == 200) {
+                    let da = data.data;
+                    let va = "<option value=''>请选择一个</option>";
+                    for (let i = 0; i < da.length; i++) {
+                        va += "<option value='" + da[i].code + "'>" + da[i].data + "</option>";
+                    }
+                    $("#type").html(va);
+                    form.render();
+                }
+            }, error: function (data) {
+                layer.msg('网络发送请求出错！请尝试刷新！', {icon: 5});
+            }
+        });
+        $.ajax({
+            url: "/dept/DeList",
+            headers: {
+                token: localStorage.getItem("token")
+            },
+            success: function (data) {
+                if (data.code == 0) {
+                    let da = data.data;
+                    let va = "<option value=''>请选择一个</option>";
+                    for (let i = 0; i < da.length; i++) {
+                        va += "<option value='" + da[i].value + "'>" + da[i].title + "</option>";
+                    }
+                    $("#dept").html(va);
+                    form.render();
+                }
+            }, error: function (data) {
+                layer.msg('网络发送请求出错！请尝试刷新！', {icon: 5});
+            }
+        });
+        form.on('submit(editButton)', function (data) {
+            let da = "type=" + $("#type").val() + "&dept=" + $("#dept").val() + "&";
+            for (let i = 0; i < 10; i++) {
+                let a = $("[name='list[" + i + "].userid']").val();
+                if (a == "" || a == undefined) {
+                    console.log(a);
+                } else {
+                    da += ("list%5B" + i + "%5D.userid=" + a + "&");
+                }
+            }
+            da = da.substring(0, da.length - 1);
+            console.log(data.field);
+            $.ajax({
+                url: "/bill/Add",
+                datatype: "json",
+                data: da,
+                success: function (data) {
+                    let code = data.code;
+                    let mes = data.mes;
+                    if (code == 200) {
+                        let index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                        parent.layer.msg(mes);
+                    } else {
+                        parent.layer.msg(mes);
+                    }
+                }, error: function (data) {
+                    layer.msg('网络发送请求出错！请尝试刷新！', {icon: 5});
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

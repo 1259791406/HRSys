@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>增加部门信息</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+    <script src="/static/js/jquery.min.js"></script>
+    <style>
+        tr td input {
+            text-align: center;
+        }
+
+        .layui-form-select .layui-select-group dd {
+            padding-left: 20px;
+            color: #1e9fff;
+        }
+    </style>
+</head>
+<body>
+<form class="layui-form">
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">上级部门</label>
+            <div class="layui-input-inline">
+                <input type="text" name="value" id="value" lay-verify="required" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">部门名称</label>
+            <div class="layui-input-inline">
+                <input type="text" name="title" id="title" lay-verify="required" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">备注</label>
+            <div class="layui-input-inline">
+                <input type="text" name="marke" id="marke" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div style="text-align: center;">
+            <div style="width: 50%;margin: 0.5rem auto">
+                <button class="layui-btn layui-btn-fluid layui-btn-normal layui-btn-lg" lay-submit=""
+                        lay-filter="editButton"><i class="layui-icon">&#xe608;</i>添加
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+<script src="/static/layui/layui.js" charset="UTF-8"></script>
+<script src="/static/js/Util.js" charset="UTF-8"></script>
+<script>
+    layui.use(['form', 'laydate', 'upload', 'element'], function () {
+        var form = layui.form;
+        var $ = layui.jquery, layer = layui.layer;
+
+        $("#laydate").focus(function () {
+            document.activeElement.blur();
+        });
+        form.on('submit(editButton)', function (data) {
+            $.ajax({
+                url: "CostBxAddData",
+                type: "POST",
+                datatype: "json",
+                data: {
+                    data: JSON.stringify(data.field)
+                },
+                headers: {
+                    token: localStorage.getItem("token")
+                },
+                success: function (data) {
+                    let code = data.code;
+                    let mes = data.mes;
+                    if (code == 200) {
+                        parent.layer.close(parent.layer.getFrameIndex(window.name));
+                        parent.layer.msg(mes);
+                    } else {
+                        parent.layer.msg(mes);
+                    }
+                }, error: function (data) {
+                    layer.msg('网络发送请求出错！请尝试刷新！', {icon: 5});
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>考勤记录</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+    <script src="/static/js/jquery.min.js"></script>
+    <style>
+        .layui-table td, .layui-table th {
+            position: relative;
+            padding: 9px 0px;
+            min-height: 20px;
+            line-height: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<script id="demo" type="text/html">
+    <table class="layui-table" style="text-align: center">
+        <tr>
+            <td>开始时间</td>
+            <td>结束时间</td>
+            <td>状态</td>
+        </tr>
+        {{# layui.each(d.data, function(index, item){ }}
+        <tr>
+            <td>{{ item.start}}</td>
+            <td>{{ item.endTime}}</td>
+            <td>{{ item.reserve15}}</td>
+        </tr>
+        {{# }); }}
+    </table>
+
+</script>
+
+<div id="view"></div>
+
+<script type="text/javascript" src="/static/layui/layui.js"></script>
+<script>
+    layui.use(['laytpl', 'layer', 'form'], function () {
+        var laytpl = layui.laytpl;
+        var layer = layui.layer;
+        var form = layui.form;
+        let date = new Date();
+        var $ = layui.$;
+        let month = date.getMonth() + 1;
+        month = month < 10 ? '0' + month : month;
+        month = month > 11 ? 12 : month;
+        let year = date.getFullYear();
+
+        GetData(year + '-' + month + '-01');
+        function GetData(time) {
+            $.ajax({
+                url: "/calendar/GetKaoQinList?page=1&limit=10&userId=" + localStorage.getItem("id") + "&start=" + time,
+                headers: {
+                    token: localStorage.getItem("token")
+                },
+                success: function (data) {
+                    if (data.code == 200) {
+                        let getTpl = demo.innerHTML;
+                        let view = document.getElementById('view');
+                        laytpl(getTpl).render(data, function (html) {
+                            view.innerHTML = html;
+                        });
+                    } else {
+                        layer.msg(data.mes, {icon: 5});
+                    }
+                }, error: function (data) {
+                    layer.msg('网络连接出现异常！请检查网络是否通畅！', {icon: 5});
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

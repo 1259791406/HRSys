@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>访客申请</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+    <script src="/static/js/jquery.min.js"></script>
+    <style>
+        input {
+            text-align: center;
+        }
+
+        .layui-form-select .layui-select-group dd {
+            padding-left: 20px;
+            color: #1e9fff;
+        }
+    </style>
+</head>
+<body>
+<form class="layui-form">
+    <table class="layui-table">
+        <tr>
+            <td>接待人</td>
+            <td>
+                <input type="hidden" name="userId" id="userId" readonly>
+                <input type="text" id="username" readonly autocomplete="off"
+                       class="layui-input">
+            </td>
+        </tr>
+        <tr>
+            <td>被访人</td>
+            <td>
+                <input type="text" id="ReceptionStaff" name="ReceptionStaff" autocomplete="off"
+                       class="layui-input">
+            </td>
+        </tr>
+        <tr>
+            <td>来访人</td>
+            <td>
+                <input type="text" name="visitName" id="visitName" autocomplete="off"
+                       class="layui-input">
+            </td>
+        </tr>
+        <tr>
+            <td>联系方式</td>
+            <td>
+                <input type="text" name="visitPhone" id="visitPhone" maxlength="11" autocomplete="off"
+                       class="layui-input">
+            </td>
+        </tr>
+        <tr>
+            <td>来访人单位</td>
+            <td>
+                <input type="text" name="visitCompany" id="visitCompany" autocomplete="off"
+                       class="layui-input">
+            </td>
+        </tr>
+        <tr>
+            <td>来访人数</td>
+            <td>
+                <select name="visitNum" id="visitNum" lay-search=""></select>
+            </td>
+        </tr>
+        <tr>
+            <td>到达时间</td>
+            <td>
+                <input type="text" name="goTime" id="goTime" autocomplete="off"
+                       class="layui-input" onfocus="this.blur();">
+            </td>
+        </tr>
+        <tr>
+            <td>驻留时长</td>
+            <td>
+                <select name="outTime" id="outTime" lay-search=""></select>
+            </td>
+        </tr>
+        <tr>
+            <td>来访类型</td>
+            <td>
+                <select id="visitType" name="visitType" lay-search=""></select>
+            </td>
+        </tr>
+        <tr>
+            <td>身份证</td>
+            <td>
+                <input type="text" name="idCard" id="idCard" autocomplete="off" maxlength="18" class="layui-input">
+            </td>
+        </tr>
+        <tr>
+            <td>区域</td>
+            <td>
+                <select name="region" id="region" lay-search="">
+                    <option value="车间">车间</option>
+                    <option value="办公室">办公室</option>
+                    <option value="车间-办公室">车间-办公室</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>是否包含工作餐</td>
+            <td style="text-align: center">
+                <input type="radio" name="IsWorkingMeal" value="1" title="包含">
+                <input type="radio" name="IsWorkingMeal" value="2" title="不包含" checked>
+            </td>
+        </tr>
+        <tr>
+            <td>交通安排</td>
+            <td>
+                <input type="text" name="CarType" id="CarType" autocomplete="off" class="layui-input">
+            </td>
+        </tr>
+<!--        <tr>-->
+<!--            <td>工牌类型</td>-->
+<!--            <td>-->
+<!--                <input type="text" name="CardType" id="CardType" autocomplete="off" class="layui-input">-->
+<!--            </td>-->
+<!--        </tr>-->
+        <tr>
+            <td>备注</td>
+            <td>
+                <input type="text" name="marke" id="marke" autocomplete="off" class="layui-input">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div style="width: 50%;margin: 0.5rem auto">
+                    <button class="layui-btn layui-btn-fluid layui-btn-normal layui-btn-lg" id="Add" lay-submit=""
+                            lay-filter="editButton"><i class="layui-icon">&#xe608;</i>添加
+                    </button>
+                </div>
+            </td>
+        </tr>
+    </table>
+</form>
+<script src="/static/layui/layui.js" charset="UTF-8"></script>
+<script src="/static/js/Util.js" charset="UTF-8"></script>
+<script>
+    layui.use(['form', 'laydate', 'upload', 'element'], function () {
+        let date = new Date();
+        let M = date.getMinutes();
+        M = M > 9 ? M : "0" + M;
+        var form = layui.form;
+        let laydate = layui.laydate;
+        var $ = layui.jquery, layer = layui.layer;
+        $("#userId").val(localStorage.getItem("id"));
+        $("#username").val(localStorage.getItem("name"));
+        let order = "";
+        let v = "";
+        for (let i = 1; i < 101; i++) {
+            v += "<option value='" + i + "'>" + i + "</option>"
+        }
+        $("#visitNum").html(v);
+        $("#outTime").html(v);
+        form.render();
+        $.ajax({
+            url: "/util/GetUUID",
+            headers: {
+                token: localStorage.getItem("token")
+            },
+            success: function (data) {
+                order = data;
+                $("#orderid").val(data);
+                localStorage.setItem("orderid", data);
+            }, error: function (data) {
+                layer.msg('网络发送请求出错！请尝试刷新！', {icon: 5});
+            }
+        });
+        $.ajax({
+            url: "/Visitor/TypeList",
+            headers: {
+                token: localStorage.getItem("token")
+            },
+            success: function (data) {
+                if (data.code == 200) {
+                    let valu = "";
+                    for (let i = 0; i < data.data.length; i++) {
+                        valu += "<option value='" + data.data[i].id + "'>" + data.data[i].name + "</option>"
+                    }
+                    $("#visitType").html(valu);
+                    form.render();
+                } else {
+                    layer.msg(data.mes, {icon: 5});
+                }
+            }, error: function (data) {
+                layer.msg('网络发送请求出错！请尝试刷新！', {icon: 5});
+            }
+        });
+
+        //日期范围
+        laydate.render({
+            elem: '#goTime',
+            type: 'datetime',
+            min: date.get + date.getHours() + ":" + M + ":" + date.getSeconds(),
+            value: date,
+            isInitValue: true,
+        });
+        form.on('submit(editButton)', function (data) {
+            let visitName = $("#visitName").val();
+            let visitPhone = $("#visitPhone").val();
+            let userId = $("#userId").val();
+            let visitCompany = $("#visitCompany").val();
+            if (visitName == null || visitName == "") {
+                layer.msg('来访人姓名不允许为空！', {icon: 5});
+                return false;
+            }
+            if (visitPhone == null || visitPhone == "") {
+                layer.msg('联系方式不允许为空！', {icon: 5});
+                return false;
+            }
+            if (userId == null || userId == "") {
+                layer.msg('您要访问人姓名不允许为空！', {icon: 5});
+                return false;
+            }
+            if (visitCompany == null || visitCompany == "") {
+                layer.msg('您的单位不允许为空！', {icon: 5});
+                return false;
+            }
+            $.ajax({
+                url: "/Visitor/AddData",
+                type: "POST",
+                datatype: "json",
+                data: data.field,
+                headers: {
+                    token: localStorage.getItem("token")
+                },
+                success: function (data) {
+                    let code = data.code;
+                    let mes = data.mes;
+                    if (code == 200) {
+                        parent.layer.close(parent.layer.getFrameIndex(window.name));
+                        parent.layer.msg(mes);
+                        setTimeout(function () {
+                            window.history.go(-1);
+                        }, 2000);
+                    } else {
+                        parent.layer.msg(mes);
+                    }
+                }, error: function (data) {
+                    layer.msg('网络发送请求出错！请尝试刷新！', {icon: 5});
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

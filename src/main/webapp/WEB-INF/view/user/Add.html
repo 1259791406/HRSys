@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>增加用户</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+    <script src="/static/js/jquery.min.js"></script>
+    <style>
+        tr td input {
+            text-align: center;
+        }
+
+        .layui-table td, .layui-table th {
+            position: relative;
+            padding: 4px 4px;
+            min-height: 20px;
+            line-height: 20px;
+            font-size: 14px;
+        }
+
+        .layui-table tbody tr:hover, .layui-table-hover {
+            background-color: transparent;
+        }
+
+        .layui-form-select .layui-select-group dd {
+            padding-left: 20px;
+            color: #1e9fff;
+        }
+    </style>
+</head>
+<body>
+<form class="layui-form">
+    <table class="layui-table" style="text-align: center">
+        <tr>
+            <td>用户ID</td>
+            <td>
+                <input type="text" id="userid" name="userid" lay-verify="required" class="layui-input" readonly
+                       style="cursor: not-allowed" disabled>
+            </td>
+            <td>是否允许登陆</td>
+            <td>
+                <input type="radio" name="state" value="1" title="允许" checked>
+                <input type="radio" name="state" value="2" title="不允许">
+            </td>
+        </tr>
+        <tr>
+            <td>用户名</td>
+            <td>
+                <input type="text" class="layui-input" name="username" id="username" lay-verify="required">
+            </td>
+            <td>性别</td>
+            <td>
+                <input type="radio" name="sex" value="1" title="男" checked>
+                <input type="radio" name="sex" value="2" title="女">
+                <input type="radio" name="sex" value="3" title="未知">
+            </td>
+        </tr>
+        <tr>
+            <td>生日</td>
+            <td>
+                <input type="text" class="layui-input" name="day" id="day" placeholder="yyyy-MM-dd" readonly>
+            </td>
+            <td>部门</td>
+            <td>
+                <select lay-search="" lay-verify="required" name="deptid" id="deptname"></select>
+            </td>
+        </tr>
+        <tr>
+            <td>籍贯</td>
+            <td>
+                <input type="text" class="layui-input" name="NativePlace" id="NativePlace">
+            </td>
+            <td>基本工资</td>
+            <td>
+                <input type="text" class="layui-input" name="salary" id="salary" lay-verify="required|number">
+            </td>
+        </tr>
+        <tr>
+            <td>文化水平</td>
+            <td colspan="3">
+                <select lay-search="" lay-verify="required" name="Education" id="Education"></select>
+            </td>
+        </tr>
+        <tr>
+            <td>手机号</td>
+            <td>
+                <input type="text" class="layui-input" name="phone" id="phone" lay-verify="required|phone"
+                       maxlength="11">
+            </td>
+            <td>身份证号</td>
+            <td>
+                <input type="text" class="layui-input" name="idcard" id="idcard" maxlength="18">
+            </td>
+        </tr>
+        <tr>
+            <td>附件</td>
+            <td colspan="3">
+                <button type="button" class="layui-btn layui-btn-normal" id="testList">选择文件</button>
+                <button type="button" class="layui-btn" name="testListAction" id="testListAction">开始上传</button>
+                <div class="layui-upload-list">
+                    <table class="layui-table" id="uploadList">
+                        <thead>
+                        <tr>
+                            <th>文件名</th>
+                            <th>大小</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody id="demoList"></tbody>
+                    </table>
+                </div>
+                <div class="layui-progress layui-progress-big" lay-showpercent="true" lay-filter="demo">
+                    <div class="layui-progress-bar layui-bg-red" lay-percent="0%"></div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>备注</td>
+            <td colspan="3">
+                <input type="text" class="layui-input" name="marke" id="marke">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="8" style="text-align: center">
+                <button class="layui-btn layui-btn-normal  layui-btn-lg" lay-submit="" name="testListAction"
+                        lay-filter="editButton"><i
+                        class="layui-icon">&#xe608;</i>添加
+                </button>
+            </td>
+        </tr>
+    </table>
+</form>
+<script src="/static/layui/layui.all.js" charset="UTF-8"></script>
+<script>
+    layui.use(['form', 'laydate', 'transfer', 'upload', 'layer', 'element'], function () {
+        var form = layui.form;
+        let laydate = layui.laydate;
+        let upload = layui.upload;
+        let element = layui.element;
+        var $ = layui.$
+            , transfer = layui.transfer
+            , layer = layui.layer
+            , util = layui.util;
+        laydate.render({
+            elem: '#day',
+            value: new Date(),
+            isInitValue: true,
+            trigger: 'click',
+            zIndex: 99999999,
+            theme: 'grid',
+            position: 'fixed',
+        });
+        $.ajax({
+            url: "util/GetUserId",
+            headers: {
+                token: localStorage.getItem("token")
+            },
+            success: function (data) {
+                $("#userid").val(data);
+                localStorage.setItem("addUserid", data);
+            }
+        });
+        $.ajax({
+            url: "util/EducationList",
+            headers: {
+                token: localStorage.getItem("token")
+            },
+            success: function (data) {
+                let da = data.data;
+                let values = "<option value=''>请选择或搜索学历名称</option>";
+                for (let i = 0; i < da.length; i++) {
+                    values += "<option value=" + da[i].code + ">" + da[i].name + "</option>"
+                }
+                $("#Education").html(values);
+                form.render();
+                // localStorage.setItem("addUserid", data);
+            }
+        });
+        form.render();
+        $.ajax({
+            url: "/dept/DeList",
+            datatype: "json",
+            headers: {
+                token: localStorage.getItem("token")
+            },
+            success: function (data) {
+                let code = data.code;
+                if (code == 0) {
+                    let values = "<option value=''>请选择该人所在部门</option>";
+                    for (let i = 0; i < data.data.length; i++) {
+                        values += "<option value=" + data.data[i].value + ">" + data.data[i].title + "</option>"
+                    }
+                    $("#deptname").html(values);
+                    form.render();
+                } else {
+                    parent.layer.msg(data.mes);
+                }
+            }, error: function (data) {
+                layer.msg('网络发送请求出错！请尝试刷新！', {icon: 5});
+            }
+        });
+
+
+        let demoListView = $('#demoList');
+        let uploadListIns = upload.render({
+            elem: '#testList',
+            url: '/file/FileUpload?id=' + localStorage.getItem("addUserid"),
+            accept: 'file',
+            multiple: true,
+            progress: function (e, percent) {
+                element.progress('demo', e + '%');
+            },
+            choose: function (obj) {
+                let files = this.files = obj.pushFile();
+                obj.preview(function (index, file, result) {
+                    var tr = $(['<tr id="upload-' + index + '">'
+                        , '<td>' + file.name + '</td>'
+                        , '<td>' + (file.size / 1014).toFixed(1) + 'kb</td>'
+                        , '<td>等待上传</td>'
+                        , '<td>'
+                        , '<button class="layui-btn layui-btn-xs demo-reload layui-hide">重传</button>'
+                        , '<button class="layui-btn layui-btn-xs layui-btn-danger demo-delete">删除</button>'
+                        , '</td>'
+                        , '</tr>'].join(''));
+                    tr.find('.demo-reload').on('click', function () {
+                        obj.upload(index, file);
+                    });
+                    tr.find('.demo-delete').on('click', function () {
+                        delete files[index];
+                        tr.remove();
+                        uploadListIns.config.elem.next()[0].value = '';
+                    });
+                    demoListView.append(tr);
+                });
+            },
+            done: function (res, index, upload) {
+                if (res.code == 0) {
+                    var tr = demoListView.find('tr#upload-' + index)
+                        , tds = tr.children();
+                    tds.eq(2).html('<span style="color: #5FB878;">上传成功</span>');
+                    tds.eq(3).html('');
+                    return delete this.files[index];
+                }
+                this.error(index, upload);
+            },
+            error: function (index, upload) {
+                let tr = demoListView.find('tr#upload-' + index)
+                    , tds = tr.children();
+                tds.eq(2).html('<span style="color: #FF5722;">上传失败</span>');
+                tds.eq(3).find('.demo-reload').removeClass('layui-hide');
+            }
+        });
+
+        form.on('submit(editButton)', function (data) {
+            $.ajax({
+                url: "/user/Add",
+                datatype: "json",
+                data: data.field,
+                headers: {
+                    token: localStorage.getItem("token")
+                },
+                success: function (data) {
+                    let code = data.code;
+                    if (code == 200) {
+                        parent.layer.close(parent.layer.getFrameIndex(window.name));
+                        parent.layer.msg(data.mes);
+                    } else {
+                        parent.layer.msg(data.mes);
+                    }
+                }, error: function (data) {
+                    layer.msg('网络发送请求出错！请尝试刷新！', {icon: 5});
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

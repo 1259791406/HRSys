@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>淮南新南港</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="/static/css/font.css">
+    <link rel="stylesheet" href="/static/css/xadmin.css">
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <script src="/static/lib/layui/layui.all.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/static/js/xadmin.js"></script>
+</head>
+<script>
+    window.onload = function () {
+        var data = JSON.parse(localStorage.getItem('sign'))[0];
+        var liStr = "";
+        for (let i = 0; i < data.length; i++) {
+            let name = data[i].name;
+            if (data[i].childMenus != null && data[i].childMenus.length > 0) {
+                liStr += "<li><a href='javascript:'><i class='iconfont'>&#xe60a;</i><cite>" + name +
+                    "</cite><i class='iconfont nav_right'>&#xe61a;</i></a><ul class='sub-menu'>";
+                for (let a = 0; a < data[i].childMenus.length; a++) {
+                    liStr += "<li><a _href=\"" + data[i].childMenus[a].url + ".html\"><i class=\"iconfont\">&#xe60a;</i><cite>" + data[i].childMenus[a].name + "</cite></a></li>";
+                }
+                liStr += "</ul>";
+            }
+            liStr += "</li>"
+        }
+        $("#nav").html(liStr);
+    }
+</script>
+<body>
+<div class="container">
+    <div class="logo">
+        <a>淮南新南港考勤系统</a>
+    </div>
+    <div class="left_open">
+        <a>
+            <i title="展开左侧栏" class="iconfont">&#xe603;</i>
+        </a>
+        <div style="margin-left: 40px;margin-top: -39px">
+            <i title="刷新" class="layui-icon layui-icon-refresh-3"></i>
+        </div>
+    </div>
+</div>
+<div class="left-nav">
+    <div id="side-nav">
+        <ul id="nav"></ul>
+    </div>
+</div>
+<div class="page-content">
+    <div class="layui-tab tab" lay-filter="xbs_tab" lay-allowclose="false">
+        <ul class="layui-tab-title">
+            <li>我的桌面</li>
+        </ul>
+        <div class="layui-tab-content">
+            <div class="layui-tab-item layui-show">
+                <iframe src='/PaiBanList' frameborder="0" scrolling="yes" class="x-iframe"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="footer">
+    <div class="copyright">淮南新南港 --考勤管理系统</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>全部薪资信息</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+    <script src="/static/js/jquery.min.js"></script>
+    <style>
+        .layui-table td, .layui-table th {
+            position: relative;
+            padding: 9px 0px;
+            min-height: 20px;
+            line-height: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<table class="layui-hide" id="test" lay-filter="test"></table>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="sp">审批</a>
+    <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="cs">查审</a>
+</script>
+<script type="text/javascript" src="/static/layui/layui.js"></script>
+<script>
+    layui.use(['layer', 'laypage', 'laydate', 'table'], function () {
+        var layer = layui.layer;
+        var laydate = layui.laydate;
+        var table = layui.table;
+        var $ = layui.jquery, layer = layui.layer;
+        table.render({
+            elem: '#test',
+            url: '/salary/page?App=' + localStorage.getItem("id"),
+            title: '工资列表',
+            height: 'full-160',
+            headers: {token: localStorage.getItem("token")},
+            page: {
+                layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'],
+                groups: 3,
+                first: true,
+                last: true
+            },
+            parseData: function (res) {
+                layer.msg(res.mes);
+            },
+            limit: 20,
+            limits: [20, 40, 60, 80, 100],
+            cols: [[
+                {
+                    align: 'center',
+                    width: 75,
+                    title: 'ID',
+                    field: 'id',
+                    fixed: 'left',
+                },
+                {align: 'center', field: 'userid', title: '员工姓名', width: 160},
+                {align: 'center', field: 'basic', title: '基本工资', width: 160},
+                {align: 'center', field: 'hour', title: '小时工资', width: 160},
+                {align: 'center', field: 'monthPerformance', title: '月度绩效', width: 160},
+                {align: 'center', field: 'quarterPerformance', title: '季度绩效', width: 160},
+                {align: 'center', field: 'yearEndBonus', title: '年终奖金', width: 160},
+                {align: 'center', field: 'overtime', title: '加班', width: 160},
+                {align: 'center', field: 'allowance', title: '津贴', width: 160},
+                {align: 'center', field: 'particularlyAawards', title: '特别奖项', width: 160},
+                {align: 'center', field: 'festival', title: '差旅补贴', width: 160},
+                {align: 'center', field: 'travel', title: '年节慰问', width: 160},
+                {align: 'center', field: 'provideForTheAged', title: '社保-养老', width: 160},
+                {align: 'center', field: 'medicalTreatment', title: '社保-医疗', width: 160},
+                {align: 'center', field: 'housing', title: '社保-住房', width: 160},
+                {align: 'center', field: 'occupationalInjury', title: '社保-工伤', width: 160},
+
+                {align: 'center', field: 'pensionCompany', title: '公司-养老', width: 160},
+                {align: 'center', field: 'medcalCompany', title: '公司-医疗', width: 160},
+                {align: 'center', field: 'unemploymentCompany', title: '公司-失业', width: 160},
+
+                {align: 'center', field: 'industriakCompany', title: '公司-工伤', width: 160},
+                {align: 'center', field: 'housingCompany', title: '公司-住房', width: 160},
+
+                {align: 'center', field: 'Children', title: '抵扣项-子女', width: 160},
+                {align: 'center', field: 'SupportTheOld', title: '抵扣项-赡养', width: 160},
+                {align: 'center', field: 'Adult', title: '抵扣项-继续教育', width: 200},
+                {align: 'center', field: 'Draw', title: '抵扣项-房贷', width: 160},
+                {align: 'center', field: 'Renting', title: '抵扣项-租房', width: 160},
+                {align: 'center', field: 'Serious', title: '抵扣项-大病', width: 160},
+
+                {align: 'center', field: 'inDryDock', title: '负调整', width: 100},
+                {align: 'center', field: 'birthCompany', title: '正调整', width: 100},
+
+                {align: 'center', field: 'leave', title: '请假', width: 160},
+                {align: 'center', field: 'late', title: '迟到', width: 160},
+                {align: 'center', field: 'early', title: '早退', width: 160},
+                {align: 'center', field: 'absenteeism', title: '旷工', width: 160},
+                {align: 'center', field: 'overtimepay', title: '个人所得税', width: 160},
+                {align: 'center', field: 'eat', title: '餐费', width: 160},
+
+
+                {align: 'center', field: 'salary', title: '实发工资', width: 110},
+                {align: 'center', field: 'time', title: '时间', width: 160},
+                {align: 'center', fixed: 'right', title: '操作', toolbar: '#barDemo', width: 115}
+            ]],
+            id: 'testReload',
+            page: true
+        })
+        table.on('tool(test)', function (obj) {
+            let eve = obj.event;
+            let data = obj.data;
+            let id = data.code;
+            if (eve === 'sp') {
+                layer.open({
+                    title: ['审核意见', 'background-color:#8DCE16; color:#fff;'],
+                    anim: 'up',
+                    content: '<textarea type="text" class="layui-textarea" id="textarea" placeholder="请输入审核意见，如无则不用输入！" ></textarea>',
+                    btn: ['同意', '驳回'],
+                    yes: function (index) {
+                        $.ajax({
+                            url: "/salary/App",
+                            type: "POST",
+                            datatype: "json",
+                            async: false,
+                            data: {
+                                code: id,
+                                userid: localStorage.getItem("id"),
+                                state: 2,
+                                Opinion: $('#textarea').val(),
+                            },
+                            success: function (data) {
+                                let mess = data.mes;
+                                layer.closeAll();
+                                if (data.code == 200) {
+                                    layer.msg(mess);
+                                    setTimeout(function () {
+                                        location.reload();
+                                    }, 1500);
+                                } else {
+                                    layer.msg(mess, {icon: 5});
+                                    setTimeout(function () {
+                                        location.reload();
+                                    }, 2000);
+                                }
+                            },
+                            error: function (da) {
+                                errorAll();
+                            }
+                        })
+                    },
+                    btn2: function (index) {
+                        $.ajax({
+                            url: "/salary/App",
+                            type: "POST",
+                            datatype: "json",
+                            async: false,
+                            data: {
+                                code: id,
+                                userid: localStorage.getItem("id"),
+                                state: 3,
+                                Opinion: $('#textarea').val(),
+                            },
+                            success: function (data) {
+                                var mess = data.mes;
+                                layer.closeAll();
+                                if (data.code == 200) {
+                                    layer.msg(mess);
+                                    setTimeout(function () {
+                                        location.reload();
+                                    }, 1500);
+                                } else {
+                                    layer.msg(mess, {icon: 5});
+                                    setTimeout(function () {
+                                        location.reload();
+                                    }, 2000);
+                                }
+                            },
+                            error: function (data) {
+                                errorAll();
+                            }
+                        })
+                    }
+                });
+            } else if (eve === 'cs') {
+                $.ajax({
+                    url: "/task/GetTableList?code=" + id,
+                    async: false,
+                    success: function (data) {
+                        let mmm = "<div class='layui-form'><table class='layui-table'><thead><tr><th>处理人</th><th>时间</th><th>处理方式</th><th>意见</th></tr></thead><tbody>";
+                        let mes = "";
+                        let wei = "</tbody></table></div>";
+                        let da = data.data;
+                        if (data.code == 200) {
+                            $.each(da, function (index) {
+                                let userName = da[index].userid;
+                                let userTime = da[index].time;
+                                let TaskName = da[index].state;
+                                let name = da[index].opinion;
+                                mes += "<tr ><td>" + userName + "</td><td>" + userTime + "</td><td>" + TaskName + "</td><td style='color:red;'>" + name + "</td></tr>";
+                            });
+                            var kk = mmm + mes + wei;
+                            layer.open({
+                                type: 1,
+                                content: kk,
+                                anim: 'up',
+                                area: ['80%', '80%'],
+                                style: 'position:fixed; bottom:0; left:0; width: 100%; max-width:50%x;height: auto; max-height: 60%;padding:10px 0; border:none;overflow-x:auto;overflow-y:auto;'
+                            });
+                        } else {
+                            layer.open({
+                                content: data.mes + "暂不支持查询功能！"
+                                , skin: 'msg'
+                                , time: 2
+                            });
+                        }
+                    },
+                    error: function (da) {
+                        layer.msg('网络连接发生异常！请检查！', {icon: 5});
+                    }
+                })
+            }
+        });
+        function errorAll() {
+            layer.open({
+                content: '网络连接失败，请尝试刷新或更换网络后再试！'
+                , skin: 'msg'
+                , time: 2
+            });
+        };
+    });
+</script>
+</body>
+</html>

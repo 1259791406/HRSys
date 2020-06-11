@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>排班详细记录</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+    <script src="/static/js/jquery.min.js"></script>
+</head>
+<body>
+<div style="margin:0 auto;text-align:center;margin-top: 15px">
+    <div class="demoTable">
+        <table style="text-align: center;margin:auto;width: 100%">
+            <tr>
+                <td>用户姓名</td>
+                <td>
+                    <input class="layui-input" name="userId" id="userId">
+                </td>
+            </tr>
+        </table>
+        <div style="margin-top: 10px">
+            <button class="layui-btn layui-btn-normal" data-type="reload"><i class="layui-icon">&#xe615;</i>搜索</button>
+            <button class="layui-btn layui-btn-normal" data-type="Add"><i class="layui-icon">&#xe608;</i>添加</button>
+            <button type="button" class="layui-btn" id="test3"><i class="layui-icon">&#xe621;</i>批量导入</button>
+        </div>
+    </div>
+</div>
+<table class="layui-hide" id="test" lay-filter="test"></table>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="update">修改</a>
+</script>
+<script type="text/javascript" src="/static/layui/layui.js"></script>
+<script>
+    var layuiTable = "";
+    var JsonData = "";
+    layui.use(['table', 'upload'], function () {
+        var table = layui.table,
+            layer = layui.layer,
+            form = layui.form,
+            upload = layui.upload;
+        layuiTable = table;
+        var $ = layui.jquery, layer = layui.layer;
+        table.render({
+            elem: '#test',
+            url: '/calendar/pageList',
+            title: '排班详细列表',
+            height: 'full-160',
+            headers: {token: localStorage.getItem("token")},
+            page: {
+                layout: ['limit', 'count', 'prev', 'page', 'next', 'skip']
+                , groups: 3
+                , first: true
+                , last: true
+            },
+            parseData: function (res) {
+                layer.msg(res.mes);
+            },
+            limit: 20,
+            limits: [20, 40, 60, 80, 100],
+            cols: [[
+                {
+                    align: 'center',
+                    width: 75,
+                    title: 'ID',
+                    field: 'id',
+                    fixed: 'left',
+                },
+                {align: 'center', field: 'userId', title: '用户名称', width: 160},
+                {align: 'center', field: 'start', title: '开始时间', width: 160},
+                {align: 'center', field: 'endTime', title: '结束时间', width: 160},
+                {
+                    align: 'center', field: 'reserve6', title: '工作时间', width: 160, templet: function (d) {
+                        let reserve6 = d.reserve6;
+                        let hour = parseInt(reserve6 / 60 % 24);
+                        let min = parseInt(reserve6 % 60);
+                        if (min == 0) {
+                            if (hour == 0) {
+                                return '';
+                            } else {
+                                return hour + ' 小时';
+                            }
+                        } else {
+                            if (hour == 0) {
+                                return min + ' 分钟';
+                            } else {
+                                return hour + ' 小时 ' + min + ' 分钟';
+                            }
+                        }
+                    }
+                },
+                {align: 'center', field: 'state', title: '状态', width: 100},
+                {align: 'center', field: 'time', title: '添加日期', width: 160},
+                {field: 'marke', title: '备注'},
+                {align: 'center', fixed: 'right', title: '操作', toolbar: '#barDemo', width: 65}
+            ]],
+            id: 'testReload',
+            page:
+                true
+        })
+        var $ = layui.$, active = {
+            reload: function () {
+                table.reload('testReload', {
+                    id: 'test',
+                    page: {
+                        curr: 1
+                    }, where: {
+                        userId: $('#userId').val(),
+                    }
+                }, 'data');
+            },
+            Add: function () {
+                layer.open({
+                    id: 'addUser',
+                    type: 2,
+                    title: '增加排班信息',
+                    maxmin: true,
+                    shadeColse: true,
+                    area: ['75%', '52%'],
+                    content: '/AddCalendar',
+                    end: function (data) {
+                        table.reload('testReload', {
+                            id: 'test',
+                            page: {
+                                curr: $(".layui-laypage-em").next().html()
+                            }
+                        }, 'data');
+                    }
+                });
+            }
+        };
+        $('.demoTable .layui-btn').on('click', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+        table.on('tool(test)', function (obj) {
+            let data = obj.data;
+            let eve = obj.event;
+            if (eve === 'update') {
+                let userId = data.userId;
+                let endTime = data.endTime;
+                JsonData = {
+                    id: data.id,
+                    userId: userId,
+                    start: data.start,
+                    endTime: endTime,
+                    marke: data.marke,
+                };
+                if (new Date(endTime.replace(/-/g, "/")).getTime() > new Date().getTime()) {
+                    let wi = $(window).width();
+                    let hi = $(window).height();
+                    if (wi > 440) {
+                        wi = '440px';
+                    } else {
+                        wi = '95%';
+                    }
+                    if (hi > 400) {
+                        hi = '400px';
+                    } else {
+                        hi = '95%';
+                    }
+                    layer.open({
+                        type: 2,
+                        title: '修改用户：' + userId + ' 排班信息',
+                        maxmin: true,
+                        shadeColse: true,
+                        area: [wi, hi],
+                        content: '/calendar/Update?userId=' + userId,
+                        end: function (data) {
+                            table.reload('testReload', {
+                                id: 'test',
+                                page: {
+                                    curr: $(".layui-laypage-em").next().html()
+                                }
+                            }, 'data');
+                        }
+                    });
+                } else {
+                    layer.msg('此人排班已结束，暂时不支持修改！', {icon: 5})
+                }
+            }
+        });
+        //导入文件
+        upload.render({
+            elem: '#test3',
+            url: '/file/FileUpload?id=all',
+            accept: 'file',
+            exts: 'xlsx',
+            before: function (obj) {
+                layer.load();
+            },
+            done: function (res, index, upload) {
+                layer.closeAll('loading');
+                let code = res.code;
+                let mes = res.mes;
+                let count = res.count;
+                let success = res.success;
+                let error = res.error;
+                if (code == 100) {
+                    layer.msg(mes, {icon: 5});
+                } else if (code == 200) {
+                    let errorLength = error.length;
+                    let da = "<table class=\"layui-table\"><tbody><tr><td>此次文件导入总条数</td><td style='color:red;text-align: center;font-size: 20px;' colspan='3'>" + count + "</td></tr><tr><td>成功数</td><td style='color:red;text-align: center;font-size: 20px;'colspan='3'>" + success + "</td></tr><tr style='text-align: center'><td colspan='4'>导入文件详情如下：</td></tr><tr><td>车架号</td><td style='min-width: 100px'>是否成功</td><td>详情</td><td style='min-width: 150px'>生成时间</td></tr>";
+                    let xinxi = "";
+                    for (let i = 0; i < errorLength; i++) {
+                        let code = error[i].code;
+                        if (code == 500) {
+                            xinxi += "<tr style='color: red'><td>" + error[i].name + "</td><td style='width: 50px'>" + error[i].code + "</td><td>" + error[i].marke + "</td><td style='width: 100px'>" + error[i].time + "</td></tr>";
+                        } else {
+                            xinxi += "<tr><td>" + error[i].name + "</td><td>" + error[i].code + "</td><td>" + error[i].marke + "</td><td>" + error[i].time + "</td></tr>";
+                        }
+                    }
+                    layer.open({
+                        title: '文件导入结果如下：',
+                        type: 1,
+                        content: da + xinxi + "</tbody></table>",
+                        anim: 'up',
+                        area: ['700px', '85%'],
+                        style: 'position:fixed; bottom:0; left:0; width: 100%; height: auto; max-height: 60%;padding:10px 0; border:none;overflow-x:auto;overflow-y:auto;',
+                        cancel: function (index, layero) {
+                            let page = $(".layui-laypage-em").next().html();
+                            table.reload('testReload', {
+                                page: {
+                                    curr: page
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    layer.msg(res.mes, {icon: 5});
+                }
+            }
+            , error: function (res, index, upload) {
+                layer.closeAll('loading');
+                layer.msg(res.mes, {icon: 5});
+            }
+        });
+    })
+</script>
+</body>
+</html>

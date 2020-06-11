@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>增加排班信息</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+    <script src="/static/layui/layui.all.js" charset="UTF-8"></script>
+    <script src="/static/js/jquery.min.js"></script>
+    <style>
+        tr td input {
+            text-align: center;
+        }
+
+        .layui-table td, .layui-table th {
+            position: relative;
+            padding: 4px 4px;
+            min-height: 20px;
+            line-height: 20px;
+            font-size: 14px;
+        }
+
+        .layui-table tbody tr:hover, .layui-table-hover {
+            background-color: transparent;
+        }
+
+        .layui-form-select .layui-select-group dd {
+            padding-left: 20px;
+            color: #1e9fff;
+        }
+    </style>
+</head>
+<body>
+<form class="layui-form">
+    <table class="layui-table" style="text-align: center">
+        <tr>
+            <td>用户名称</td>
+            <td>
+                <select lay-search="" lay-verify="required" lay-filter="userid" name="userId" id="userid"></select>
+            </td>
+            <td>排班日期</td>
+            <td>
+                <select lay-search="" lay-verify="required" lay-filter="time" name="time" id="time"></select>
+            </td>
+        </tr>
+        <tr>
+            <td>开始时间</td>
+            <td>
+                <input type="text" class="layui-input" name="start" id="start" lay-verify="required" readonly>
+            </td>
+            <td>结束时间</td>
+            <td>
+                <input type="text" class="layui-input" name="endTime" id="end" lay-verify="required" readonly>
+            </td>
+        </tr>
+        <tr>
+            <td>备注</td>
+            <td colspan="3">
+                <input type="text" class="layui-input" name="marke" id="marke">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="8" style="text-align: center">
+                <button class="layui-btn layui-btn-normal  layui-btn-lg" lay-submit="" name="testListAction"
+                        lay-filter="editButton"><i
+                        class="layui-icon">&#xe608;</i>添加
+                </button>
+            </td>
+        </tr>
+    </table>
+</form>
+
+<script>
+    layui.use(['form', 'laydate', 'layer'], function () {
+        var form = layui.form;
+        var laydate = layui.laydate;
+        var $ = layui.$
+            , layer = layui.layer;
+        let date = new Date();
+        $.ajax({
+            url: "/user/SelectUserList",
+            headers: {
+                token: localStorage.getItem("token")
+            },
+            success: function (data) {
+                let da = data.data;
+                let values = "<option value=''>请选择或搜索需要添加排班员工信息</option>";
+                for (let i = 0; i < da.length; i++) {
+                    values += "<option value=" + da[i].code + ">" + da[i].data + "</option>"
+                }
+                $("#userid").html(values);
+                form.render();
+            }
+        });
+        form.on('select(userid)', function (data) {
+            $.ajax({
+                url: "/user/SelectUserCa",
+                data: {
+                    orderid: data.value
+                },
+                headers: {
+                    token: localStorage.getItem("token")
+                },
+                success: function (data) {
+                    let da = data.data;
+                    let values = "<option value=''>请选择需要添加得日期信息</option>";
+                    for (let i = 0; i < da.length; i++) {
+                        let dd = da[i];
+                        values += "<option value=" + dd + ">" + dd + "</option>"
+                    }
+                    $("#time").html(values);
+                    form.render();
+                }
+            });
+        });
+        var startTime = laydate.render({
+            elem: '#start',
+            value: date,
+            trigger: 'click',
+            zIndex: 99999999,
+            theme: 'grid',
+            position: 'fixed',
+            btns: ['confirm'],
+            type: 'datetime',
+            done: function (value, date) {
+                endTime.config.min = {
+                    year: date.year,
+                    month: date.month - 2,
+                    date: date.date,
+                    hours: date.hours,
+                    minutes: date.minutes,
+                    seconds: date.seconds,
+                };
+                $("#end").val(value);
+            }
+        });
+        var endTime = laydate.render({
+            elem: '#end',
+            value: date,
+            trigger: 'click',
+            zIndex: 99999999,
+            theme: 'grid',
+            position: 'fixed',
+            type: 'datetime',
+            btns: ['confirm'],
+        });
+        form.on('select(time)', function (data) {
+            let val = data.value;
+            let a = val.split("-");
+            let one = a[0];
+            let two = (a[1] - 1);
+            let ere = a[2];
+            startTime.config.min = {
+                year: one,
+                month: two,
+                date: ere,
+                hours: 0,
+                minutes: 0,
+                seconds: 0
+            };
+            startTime.config.max = {
+                year: one,
+                month: two,
+                date: ere,
+                hours: 23,
+                minutes: 59,
+                seconds: 59
+            }
+            endTime.config.min = {
+                year: one,
+                month: two,
+                date: ere,
+                hours: 0,
+                minutes: 30,
+                seconds: 0
+            };
+            $("#start").val(val + ' 00:00:00');
+            $("#end").val(val + ' 23:59:59');
+        });
+        form.on('submit(editButton)', function (data) {
+            $.ajax({
+                url: "/calendar/Add",
+                datatype: "json",
+                data: data.field,
+                headers: {
+                    token: localStorage.getItem("token")
+                },
+                success: function (data) {
+                    let code = data.code;
+                    if (code == 200) {
+                        parent.layer.close(parent.layer.getFrameIndex(window.name));
+                        parent.layer.msg(data.mes);
+                    } else {
+                        parent.layer.msg(data.mes);
+                    }
+                }, error: function (data) {
+                    layer.msg('网络发送请求出错！请尝试刷新！', {icon: 5});
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>
