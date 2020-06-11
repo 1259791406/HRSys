@@ -4,7 +4,7 @@ package com.hr.Overall;
  * 工具类
  */
 public class Global {
-
+    public double qq = 1;
     //日志存放路径
     public static final String FilePath = "D:\\ErrorLog\\";
 
