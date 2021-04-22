@@ -20,7 +20,7 @@
         <!-- spring版本号 -->
         <spring.version>3.2.18.RELEASE</spring.version>
         <!-- mybatis版本号 -->
-        <mybatis.version>3.4.1</mybatis.version>
+        <mybatis.version>3.5.6</mybatis.version>
         <!--    poi版本号-->
         <org.poi-version>3.14</org.poi-version>
     </properties>
